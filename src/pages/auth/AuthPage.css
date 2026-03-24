@@ -1,0 +1,386 @@
+:root {
+            /* Bảng màu mới: Be, Nâu Gỗ, Kem */
+            --primary-beige: #D2B48C; /* Tan - Màu be chính */
+            --primary-beige-light: #E0CDB6; /* Be nhạt hơn */
+            --primary-beige-dark: #B89A74;  /* Be đậm hơn */
+
+            --wood-brown: #8B4513;    /* SaddleBrown - Màu gỗ đậm */
+            --wood-brown-light: #A0522D; /* Sienna - Màu gỗ nhạt hơn */
+
+            --cream-bg: #F5F5DC;      /* Beige (CSS name) - Màu nền kem nhẹ */
+            --light-text: #FAF0E6;   /* Linen - Màu chữ sáng trên nền tối */
+            --dark-text: #5D4037;    /* Deep Brown - Màu chữ đậm trên nền sáng */
+
+            /* Gán lại các biến màu gốc để sử dụng trong các class hiện tại */
+            --primary: var(--primary-beige);
+            --primary-light: var(--primary-beige-light);
+            --primary-dark: var(--primary-beige-dark);
+            --secondary: var(--wood-brown-light);
+            --light: var(--cream-bg);
+            --dark: var(--dark-text);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--light);
+            color: var(--dark);
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navigation */
+        .navbar {
+            background-color: rgba(253, 250, 243, 0.95); /* Màu kem rất nhạt, hơi trong */
+            box-shadow: 0 2px 20px rgba(93, 64, 55, 0.08); /* Bóng đổ màu nâu nhạt hơn */
+            padding: 12px 0;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--wood-brown) !important;
+        }
+
+        .navbar-brand span {
+            color: var(--primary-beige-dark);
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: var(--dark-text) !important;
+            margin: 0 10px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:before {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--wood-brown);
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover:before {
+            width: 100%;
+        }
+
+        .nav-btn {
+            border-radius: 30px;
+            padding: 8px 18px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login { /* Nút đăng nhập trên navbar (nếu có) */
+            background-color: transparent;
+            border: 2px solid var(--primary-beige-dark);
+            color: var(--primary-beige-dark) !important;
+        }
+
+        .btn-login:hover {
+            background-color: var(--primary-beige-dark);
+            color: var(--light-text) !important;
+        }
+
+        .btn-register { /* Nút đăng ký trên navbar */
+            background-color: var(--primary-beige);
+            border: 2px solid var(--primary-beige);
+            color: var(--dark-text) !important;
+        }
+
+        .btn-register:hover {
+            background-color: var(--primary-beige-dark);
+            border-color: var(--primary-beige-dark);
+            color: var(--light-text) !important;
+        }
+
+        /* Login Form */
+        .login-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 0 60px; /* Tăng padding top một chút */
+            position: relative;
+            z-index: 1;
+            background: linear-gradient(135deg, rgba(210, 180, 140, 0.08), rgba(245, 245, 220, 0.1));
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            /* Cân nhắc đổi hình nền này sang hình ảnh có texture gỗ hoặc thư viện cổ điển */
+            /* Ví dụ: background-image: url('/images/wood-texture.jpg'); */
+            background-image: url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.03; /* Giảm opacity hoặc thay thế */
+            z-index: -1;
+        }
+
+        .card {
+            border: 1px solid var(--primary-beige-light);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(93, 64, 55, 0.12);
+            background-color: #FFFAF0; /* FloralWhite - hoặc #FAF0E6 (Linen) */
+            animation: fadeIn 0.7s ease-in-out;
+            max-width: 526px;
+            width: 100%;
+        }
+
+        .card-header {
+            background-color: var(--primary-beige);
+            color: var(--dark-text);
+            text-align: center;
+            padding: 25px 20px;
+            border-bottom: 1px solid var(--primary-beige-light);
+        }
+        .card-header h3 {
+            font-family: 'Playfair Display', serif; /* Thêm font cho tiêu đề nếu muốn */
+        }
+
+        .card-body {
+            padding: 35px 40px; /* Tăng padding một chút */
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background-color: var(--light-text);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            box-shadow: 0 4px 10px rgba(93, 64, 55, 0.1);
+            border: 3px solid var(--primary-beige-dark); /* Viền dày hơn chút */
+        }
+
+        .logo i {
+            font-size: 38px; /* Giảm nhẹ icon nếu viền dày hơn */
+            color: var(--wood-brown);
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(184, 154, 116, 0.3); /* Màu be đậm hơn cho focus */
+            border-color: var(--primary-beige-dark);
+        }
+
+        .input-group {
+            border-radius: 0px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(93, 64, 55, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .input-group:focus-within {
+            box-shadow: 0 5px 15px rgba(93, 64, 55, 0.1);
+            border-color: var(--primary-beige-dark);
+        }
+
+        .input-group-text {
+            background-color: #fff;
+            border-right: 0;
+            color: var(--dark-text);
+            transition: all 0.3s ease;
+        }
+
+        .form-control {
+            border-left: 0;
+            font-size: 16px;
+            padding: 12px;
+            background-color: #fff;
+        }
+
+        .input-group:focus-within .input-group-text {
+            color: var(--wood-brown);
+        }
+
+        .btn-primary { /* Nút Đăng nhập chính */
+            background-color: var(--primary-beige-dark);
+            border-color: var(--primary-beige-dark);
+            color: var(--light-text);
+            padding: 12px;
+            font-weight: 600;
+            border-radius: 30px;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            text-transform: uppercase; /* Thêm chữ hoa */
+        }
+
+        .btn-primary:hover {
+            background-color: var(--wood-brown);
+            border-color: var(--wood-brown);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(93, 64, 55, 0.15);
+        }
+
+        .form-footer {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            font-size: 0.9rem; /* Giảm nhẹ font size */
+            align-items: center;
+display: flex; justify-content: center; align-items: center;
+        }
+
+        .form-footer a {
+            color: var(--wood-brown);
+            text-decoration: solid;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-self: center;
+            align-content: center;
+            text-align: center;
+        }
+
+        .form-footer a:hover {
+            color: var(--primary-beige-dark);
+            text-decoration: underline; /* Thêm gạch chân khi hover */
+        }
+
+        .form-footer a i {
+            margin-right: 5px;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 25px 0; /* Tăng margin */
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--primary-beige-light); /* Màu be nhạt cho đường kẻ */
+        }
+
+        .divider span {
+            padding: 0 15px; /* Tăng padding */
+            color: var(--primary-beige-dark); /* Màu be đậm cho chữ "hoặc" */
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        @keyframes fadeIn {
+            from {opacity: 0; transform: translateY(20px);}
+            to {opacity: 1; transform: translateY(0);}
+        }
+
+        .form-control.is-invalid {
+            border-color: #dc3545; /* Giữ màu đỏ cho lỗi */
+            animation: shake 0.2s ease;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        /* Toast (giữ nguyên hoặc điều chỉnh màu nếu cần) */
+        .toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 9999;
+        }
+
+        .toast {
+            min-width: 300px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-radius: 10px;
+            opacity: 0.95;
+        }
+        /* Nút "Quay về trang chủ" */
+        .go-back {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            margin-top: 25px; /* Tăng margin */
+        }
+
+        .btn-go-back {
+            background-color: transparent; /* Trong suốt */
+            color: var(--wood-brown);
+            border: 2px solid var(--wood-brown);
+            border-radius: 30px;
+            padding: 10px 25px; /* Tăng padding */
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-go-back:hover {
+            background-color: var(--wood-brown);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(93, 64, 55, 0.1);
+        }
+
+        /* Floating elements */
+        .floating-element {
+            position: absolute;
+            z-index: -1;
+            opacity: 0.06; /* Giảm opacity nếu muốn tinh tế hơn */
+            color: var(--primary-beige-dark);
+            animation: float 10s ease-in-out infinite alternate; /* Thay đổi animation */
+        }
+
+        .element-1 { top: 10%; left: 5%; font-size: 45px; animation-delay: 0s; }
+        .element-2 { top: 65%; right: 8%; font-size: 55px; animation-delay: 2.5s; }
+        .element-3 { bottom: 15%; left: 15%; font-size: 50px; animation-delay: 5s; }
+        .element-4 { top: 25%; right: 12%; font-size: 40px; animation-delay: 7.5s; }
+
+        @keyframes float { /* Animation float nhẹ nhàng hơn */
+            0% { transform: translateY(0px) rotate(-2deg); }
+            50% { transform: translateY(-15px) rotate(3deg); }
+            100% { transform: translateY(0px) rotate(-2deg); }
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark-text); /* Nâu đậm */
+            color: var(--primary-beige-light); /* Be nhạt */
+            padding: 20px 0; /* Tăng padding */
+            margin-top: auto;
+        }
+
+        .footer-mini {
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .form-footer {
+                flex-direction: column;
+                gap: 15px;
+                align-items: center;
+            }
+            .login-container { padding: 60px 15px 30px; } /* Điều chỉnh padding cho mobile */
+            .card-body { padding: 25px; }
+        }

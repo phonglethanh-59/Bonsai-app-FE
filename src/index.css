@@ -1,0 +1,32 @@
+
+/* Global styles for non-admin pages */
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Ensure admin styles don't leak to other pages */
+:not(.admin-container) {
+  /* Reset any admin-specific styles for non-admin pages */
+}
+
+/* Custom scrollbar for non-admin pages */
+:not(.admin-container) ::-webkit-scrollbar {
+  width: 8px;
+}
+
+:not(.admin-container) ::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+:not(.admin-container) ::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+:not(.admin-container) ::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
