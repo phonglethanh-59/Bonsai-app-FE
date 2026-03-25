@@ -1,23 +1,23 @@
 :root {
-    /* Wood & Beige Theme */
-    --primary: #8B4513;
-    --primary-light: #A0522D;
-    --primary-dark: #5C3317;
-    --secondary: #D2B48C;
-    --light: #FAF0E6;
-    --dark: #4A3B31;
-    --card-bg: #FFFBF0;
-    --text-on-primary: #FAF0E6;
-    --text-on-secondary: #4A3B31;
-    --text-light-custom: #795548;
-    --feature-icon-bg-base: rgba(139, 69, 19, 0.1);
-    --roles-section-bg-base: rgba(210, 180, 140, 0.07);
-    --footer-bg-custom: #3D2B1F;
-    --footer-text-custom: #D3C5BC;
-    --footer-link-hover-custom: #FAF0E6;
-    --nav-bar-bg: rgba(255, 251, 240, 0.95);
-    --box-shadow-base-color-rgb: 139, 69, 19;
-    --border-subtle: #E0D6CC;
+    /* Green Bonsai Plant Theme */
+    --primary: #2E7D32;
+    --primary-light: #4CAF50;
+    --primary-dark: #1B5E20;
+    --secondary: #81C784;
+    --light: #F1F8E9;
+    --dark: #1B3A1B;
+    --card-bg: #FAFFF5;
+    --text-on-primary: #F1F8E9;
+    --text-on-secondary: #1B3A1B;
+    --text-light-custom: #558B2F;
+    --feature-icon-bg-base: rgba(46, 125, 50, 0.1);
+    --roles-section-bg-base: rgba(129, 199, 132, 0.07);
+    --footer-bg-custom: #1B3A1B;
+    --footer-text-custom: #A5D6A7;
+    --footer-link-hover-custom: #E8F5E9;
+    --nav-bar-bg: rgba(241, 248, 233, 0.95);
+    --box-shadow-base-color-rgb: 46, 125, 50;
+    --border-subtle: #C8E6C9;
 }
 
 body {
@@ -143,8 +143,8 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(40, 28, 20, 0.65);
-    /* Lớp phủ màu nâu đậm */
+    background-color: rgba(20, 40, 20, 0.6);
+    /* Lớp phủ màu xanh đậm */
     z-index: 0;
     /* Nằm trên video */
 }
@@ -169,7 +169,7 @@ body {
     opacity: 0;
     transform: translateY(20px);
     animation: fadeUp 4s forwards 1s;
-    color:#e8bd87
+    color:#A5D6A7
 }
 
 .hero p {
@@ -194,8 +194,8 @@ body {
 }
 
 .hero .btn-secondary.hero-btn {
-    background-color: #d2b48c;
-    border-color: #d2b48c;
+    background-color: #81C784;
+    border-color: #81C784;
     color: var(--text-on-secondary) !important;
     align-items: end;
 
@@ -436,7 +436,7 @@ footer {
     height: 40px;
     line-height: 40px;
     text-align: center;
-    background-color: rgba(250, 240, 230, 0.1);
+    background-color: rgba(165, 214, 167, 0.15);
     color: var(--footer-link-hover-custom);
     border-radius: 50%;
     margin-right: 10px;
@@ -450,7 +450,7 @@ footer {
 }
 
 .footer-bottom {
-    border-top: 1px solid rgba(250, 240, 230, 0.15);
+    border-top: 1px solid rgba(165, 214, 167, 0.2);
     padding-top: 20px;
     margin-top: 40px;
     font-size: 0.9rem;

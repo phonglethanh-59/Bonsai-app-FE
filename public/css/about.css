@@ -1,25 +1,24 @@
 :root {
-    /* Wood & Beige Theme (Consistent with other pages) */
-    --primary: #8B4513;         /* SaddleBrown (Main Wood) */
-    --primary-light: #A0522D;    /* Sienna (Lighter Wood) */
-    --primary-dark: #5C3317;     /* Darker Wood */
-    --secondary: #D2B48C;        /* Tan (Accent Beige/Light Wood) */
-    --light: #FAF0E6;           /* Linen (Main Background Beige) */
-    --dark: #4A3B31;            /* Dark Brown (Main Text) */
+    /* Green Bonsai Plant Theme */
+    --primary: #2E7D32;
+    --primary-light: #4CAF50;
+    --primary-dark: #1B5E20;
+    --secondary: #81C784;
+    --light: #F1F8E9;
+    --dark: #1B3A1B;
 
-    /* Additional custom colors */
-    --card-bg: #FFFBF0;         /* Very Light Warm Off-White (for cards) */
-    --text-on-primary: #FAF0E6; /* Light beige text for primary background */
-    --text-on-secondary: #4A3B31;/* Dark brown text for secondary background */
-    --text-light-custom: #795548; /* Lighter brown for secondary text */
+    --card-bg: #FAFFF5;
+    --text-on-primary: #F1F8E9;
+    --text-on-secondary: #1B3A1B;
+    --text-light-custom: #558B2F;
 
-    --footer-bg-custom: #3D2B1F; /* Very Dark Brown (Footer BG) */
-    --footer-text-custom: #D3C5BC;/* Light Beige/Brown (Footer Text) */
-    --footer-link-hover-custom: #FAF0E6; /* Linen for hover */
+    --footer-bg-custom: #1B3A1B;
+    --footer-text-custom: #A5D6A7;
+    --footer-link-hover-custom: #E8F5E9;
 
-    --nav-bar-bg: rgba(255, 251, 240, 0.95); /* --card-bg with opacity */
-    --box-shadow-base-color-rgb: 139, 69, 19; /* For box shadows */
-    --border-subtle: #E0D6CC; /* A light brown border */
+    --nav-bar-bg: rgba(241, 248, 233, 0.95);
+    --box-shadow-base-color-rgb: 46, 125, 50;
+    --border-subtle: #C8E6C9;
 }
 
 body {
@@ -70,7 +69,7 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(rgba(40, 28, 20, 0.65), rgba(40, 28, 20, 0.65));
+    background: linear-gradient(rgba(20, 40, 20, 0.6), rgba(20, 40, 20, 0.6));
     z-index: -1; /* Đặt lớp phủ NẰM TRÊN video nhưng DƯỚI chữ */
 }
 .page-header h1 {
@@ -216,7 +215,7 @@ body {
 }
 
 .mission-icon {
-    background-color: rgba(210, 180, 140, 0.1); /* Tan with alpha */
+    background-color: rgba(129, 199, 132, 0.1); /* Green with alpha */
     color: var(--secondary); /* Tan */
 }
 
@@ -455,7 +454,7 @@ footer {
     height: 40px;
     line-height: 40px;
     text-align: center;
-    background-color: rgba(250, 240, 230, 0.1); /* Linen with alpha */
+    background-color: rgba(165, 214, 167, 0.1); /* Linen with alpha */
     color: var(--footer-link-hover-custom);
     border-radius: 50%;
     margin-right: 10px;
@@ -469,7 +468,7 @@ footer {
 }
 
 .footer-bottom {
-    border-top: 1px solid rgba(250, 240, 230, 0.15); /* Linen with alpha */
+    border-top: 1px solid rgba(165, 214, 167, 0.15); /* Linen with alpha */
     padding-top: 20px;
     margin-top: 40px;
     font-size: 0.9rem;
@@ -548,7 +547,7 @@ footer {
 }
 
 .breadcrumb-item, .breadcrumb-item a {
-    color: rgba(250, 240, 230, 0.85); /* Màu trắng mờ cho chữ */
+    color: rgba(165, 214, 167, 0.85); /* Màu trắng mờ cho chữ */
     text-decoration: none;
     font-size: 1rem;
 }
@@ -558,5 +557,5 @@ footer {
 }
 
 .breadcrumb-item + .breadcrumb-item::before {
-    color: rgba(250, 240, 230, 0.7);
+    color: rgba(165, 214, 167, 0.7);
 }

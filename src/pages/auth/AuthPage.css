@@ -1,17 +1,17 @@
 :root {
-            /* Bảng màu mới: Be, Nâu Gỗ, Kem */
-            --primary-beige: #D2B48C; /* Tan - Màu be chính */
-            --primary-beige-light: #E0CDB6; /* Be nhạt hơn */
-            --primary-beige-dark: #B89A74;  /* Be đậm hơn */
+            /* Bảng màu mới: Xanh lá cây - Cây cảnh */
+            --primary-beige: #81C784; /* Xanh lá nhạt */
+            --primary-beige-light: #A5D6A7; /* Xanh lá rất nhạt */
+            --primary-beige-dark: #4CAF50;  /* Xanh lá trung */
 
-            --wood-brown: #8B4513;    /* SaddleBrown - Màu gỗ đậm */
-            --wood-brown-light: #A0522D; /* Sienna - Màu gỗ nhạt hơn */
+            --wood-brown: #2E7D32;    /* Xanh lá đậm */
+            --wood-brown-light: #388E3C; /* Xanh lá đậm nhẹ */
 
-            --cream-bg: #F5F5DC;      /* Beige (CSS name) - Màu nền kem nhẹ */
-            --light-text: #FAF0E6;   /* Linen - Màu chữ sáng trên nền tối */
-            --dark-text: #5D4037;    /* Deep Brown - Màu chữ đậm trên nền sáng */
+            --cream-bg: #F1F8E9;      /* Nền xanh lá rất nhạt */
+            --light-text: #E8F5E9;   /* Màu chữ sáng trên nền tối */
+            --dark-text: #1B5E20;    /* Xanh lá rất đậm cho chữ */
 
-            /* Gán lại các biến màu gốc để sử dụng trong các class hiện tại */
+            /* Gán lại các biến màu gốc */
             --primary: var(--primary-beige);
             --primary-light: var(--primary-beige-light);
             --primary-dark: var(--primary-beige-dark);
@@ -32,8 +32,8 @@
 
         /* Navigation */
         .navbar {
-            background-color: rgba(253, 250, 243, 0.95); /* Màu kem rất nhạt, hơi trong */
-            box-shadow: 0 2px 20px rgba(93, 64, 55, 0.08); /* Bóng đổ màu nâu nhạt hơn */
+            background-color: rgba(241, 248, 233, 0.95); /* Màu xanh lá rất nhạt */
+            box-shadow: 0 2px 20px rgba(46, 125, 50, 0.08); /* Bóng đổ màu xanh lá */
             padding: 12px 0;
             transition: all 0.3s ease;
         }
@@ -110,7 +110,7 @@
             padding: 100px 0 60px; /* Tăng padding top một chút */
             position: relative;
             z-index: 1;
-            background: linear-gradient(135deg, rgba(210, 180, 140, 0.08), rgba(245, 245, 220, 0.1));
+            background: linear-gradient(135deg, rgba(129, 199, 132, 0.08), rgba(232, 245, 233, 0.1));
         }
 
         .login-container::before {
@@ -133,8 +133,8 @@
             border: 1px solid var(--primary-beige-light);
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 15px 35px rgba(93, 64, 55, 0.12);
-            background-color: #FFFAF0; /* FloralWhite - hoặc #FAF0E6 (Linen) */
+            box-shadow: 0 15px 35px rgba(46, 125, 50, 0.12);
+            background-color: #FAFFF5; /* Nền xanh lá rất nhạt */
             animation: fadeIn 0.7s ease-in-out;
             max-width: 526px;
             width: 100%;
@@ -169,7 +169,7 @@
             align-items: center;
             justify-content: center;
             margin: 0 auto;
-            box-shadow: 0 4px 10px rgba(93, 64, 55, 0.1);
+            box-shadow: 0 4px 10px rgba(46, 125, 50, 0.1);
             border: 3px solid var(--primary-beige-dark); /* Viền dày hơn chút */
         }
 
@@ -186,12 +186,12 @@
         .input-group {
             border-radius: 0px;
             overflow: hidden;
-            box-shadow: 0 2px 5px rgba(93, 64, 55, 0.05);
+            box-shadow: 0 2px 5px rgba(46, 125, 50, 0.05);
             transition: all 0.3s ease;
         }
 
         .input-group:focus-within {
-            box-shadow: 0 5px 15px rgba(93, 64, 55, 0.1);
+            box-shadow: 0 5px 15px rgba(46, 125, 50, 0.1);
             border-color: var(--primary-beige-dark);
         }
 
@@ -230,7 +230,7 @@
             border-color: var(--wood-brown);
             color: white;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(93, 64, 55, 0.15);
+            box-shadow: 0 5px 15px rgba(46, 125, 50, 0.15);
         }
 
         .form-footer {
@@ -338,7 +338,7 @@ display: flex; justify-content: center; align-items: center;
             background-color: var(--wood-brown);
             color: white;
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(93, 64, 55, 0.1);
+            box-shadow: 0 5px 15px rgba(46, 125, 50, 0.1);
         }
 
         /* Floating elements */
