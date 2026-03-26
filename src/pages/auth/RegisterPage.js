@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_BASE } from '../../utils/config';
 import AuthNavbar from '../../components/auth/AuthNavbar';
 import AuthFooter from '../../components/auth/AuthFooter';
 import './AuthPage.css';
@@ -35,7 +36,7 @@ const RegisterPage = () => {
             params.append('rawPassword', formData.rawPassword);
             
             // Gọi API đăng ký của backend
-            const response = await axios.post('http://localhost:8080/auth/register', params);
+            const response = await axios.post(`${API_BASE}/auth/register`, params);
 
             setSuccess(response.data);
             setTimeout(() => {

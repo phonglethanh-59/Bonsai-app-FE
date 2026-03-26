@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import axios from 'axios';
 
-const API_BASE = 'http://localhost:8080';
+import { API_BASE } from '../utils/config';
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         try {
-            await axios.post('http://localhost:8080/auth/logout', {}, { withCredentials: true });
+            await axios.post(`${API_BASE}/auth/logout`, {}, { withCredentials: true });
         } catch (error) {
             console.error("Lỗi khi đăng xuất:", error);
         } finally {

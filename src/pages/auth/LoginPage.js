@@ -2,13 +2,14 @@ import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
+import { API_BASE } from '../../utils/config';
 import AuthNavbar from '../../components/auth/AuthNavbar';
 import AuthFooter from '../../components/auth/AuthFooter';
 import LoginContainer from '../../components/auth/LoginContainer';
 import './AuthPage.css';
 
 const LoginPage = () => {
-    const [ setError] = useState('');
+    const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     
     const navigate = useNavigate();
@@ -26,11 +27,11 @@ const LoginPage = () => {
             params.append('username', formData.username);
             params.append('password', formData.password);
 
-            await axios.post('http://localhost:8080/auth/login', params, {
+            await axios.post(`${API_BASE}/auth/login`, params, {
                 withCredentials: true,
             });
 
-            const profileResponse = await axios.get('http://localhost:8080/api/customers/profile', {
+            const profileResponse = await axios.get(`${API_BASE}/api/customers/profile`, {
                 withCredentials: true,
             });
 

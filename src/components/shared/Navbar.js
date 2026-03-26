@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { NavLink, Link, useLocation } from 'react-router-dom';
+import { NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import { API_BASE } from '../../utils/config';
 import ProfileModal from './ProfileModal';
-import OrderHistoryModal from './OrderHistoryModal';
 
 const Navbar = () => {
     const location = useLocation();
+    const navigate = useNavigate();
     const { isAuthenticated, user, loading, logout } = useAuth();
     const { getCartCount, fetchCart } = useCart();
     const [showProfileModal, setShowProfileModal] = useState(false);
-    const [showOrderModal, setShowOrderModal] = useState(false);
 
     useEffect(() => {
         if (isAuthenticated) {
@@ -65,7 +65,7 @@ const Navbar = () => {
                                         <a href="/#" className="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                             {user?.userDetail?.avatar ? (
                                                 <img
-                                                    src={`http://localhost:8080${user.userDetail.avatar}?v=${new Date().getTime()}`}
+                                                    src={`${API_BASE}${user.userDetail.avatar}`}
                                                     alt="Avatar"
                                                     width="32"
                                                     height="32"
@@ -82,7 +82,7 @@ const Navbar = () => {
                                                 </a>
                                             </li>
                                             <li>
-                                                <a href="/#" className="dropdown-item" onClick={(e) => { e.preventDefault(); setShowOrderModal(true); }}>
+                                                <a href="/#" className="dropdown-item" onClick={(e) => { e.preventDefault(); navigate('/orders'); }}>
                                                     <i className="fas fa-shopping-bag me-2"></i>Don hang cua toi
                                                 </a>
                                             </li>
@@ -109,16 +109,10 @@ const Navbar = () => {
             </nav>
 
             {isAuthenticated && (
-                <>
-                    <ProfileModal
-                        show={showProfileModal}
-                        handleClose={() => setShowProfileModal(false)}
-                    />
-                    <OrderHistoryModal
-                        show={showOrderModal}
-                        handleClose={() => setShowOrderModal(false)}
-                    />
-                </>
+                <ProfileModal
+                    show={showProfileModal}
+                    handleClose={() => setShowProfileModal(false)}
+                />
             )}
         </>
     );

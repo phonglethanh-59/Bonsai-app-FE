@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useSearchParams } from 'react-router-dom';
-import ProductDetailModal from '../../components/shared/ProductDetailModal';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 
-const API_BASE = 'http://localhost:8080';
+import { API_BASE, formatPrice } from '../../utils/config';
 
 const ProductCard = ({ product, onViewDetails }) => {
     const { addToCart } = useCart();
@@ -15,10 +14,6 @@ const ProductCard = ({ product, onViewDetails }) => {
         if (!path) return 'https://placehold.co/500x650?text=Bonsai';
         if (path.startsWith('http')) return path;
         return `${API_BASE}${path}`;
-    };
-
-    const formatPrice = (price) => {
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
     };
 
     const handleAddToCart = async (e) => {
@@ -108,8 +103,7 @@ const CategoriesPage = () => {
     const [loading, setLoading] = useState(true);
     const [searchParams, setSearchParams] = useSearchParams();
     const [searchTerm, setSearchTerm] = useState(searchParams.get('keyword') || '');
-    const [showDetailModal, setShowDetailModal] = useState(false);
-    const [selectedProductId, setSelectedProductId] = useState(null);
+    const navigate = useNavigate();
 
     const filters = {
         keyword: searchParams.get('keyword') || '',
@@ -120,13 +114,7 @@ const CategoriesPage = () => {
     };
 
     const handleShowDetails = (productId) => {
-        setSelectedProductId(productId);
-        setShowDetailModal(true);
-    };
-
-    const handleCloseDetails = () => {
-        setShowDetailModal(false);
-        setSelectedProductId(null);
+        navigate(`/product/${productId}`);
     };
 
     useEffect(() => {
@@ -292,11 +280,6 @@ const CategoriesPage = () => {
                             onPageChange={handlePageChange}
                         />
                     </section>
-                    <ProductDetailModal
-                        show={showDetailModal}
-                        handleClose={handleCloseDetails}
-                        productId={selectedProductId}
-                    />
                 </div>
             </div>
         </div>

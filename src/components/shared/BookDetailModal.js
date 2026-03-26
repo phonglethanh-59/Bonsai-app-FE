@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Modal, Button, Row, Col, Spinner } from 'react-bootstrap';
+import { API_BASE } from '../../utils/config';
 
 // Component con để hiển thị một đánh giá
 const ReviewItem = ({ review }) => {
@@ -33,11 +34,11 @@ const BookDetailModal = ({ show, handleClose, bookId }) => {
                 setError('');
                 try {
                     const [bookRes, reviewsRes] = await Promise.all([
-                        axios.get(`http://localhost:8080/api/books/details/${bookId}`),
-                        axios.get(`http://localhost:8080/api/reviews/book/${bookId}`)
+                        axios.get(`${API_BASE}/api/books/details/${bookId}`),
+                        axios.get(`${API_BASE}/api/reviews/book/${bookId}`)
                     ]);
                     setBook(bookRes.data);
-                    setReviews(reviewsRes.data);
+                    setReviews(reviewsRes.data?.content || []);
                 } catch (err) {
                     setError('Không thể tải thông tin chi tiết của sách này.');
                     console.error("Lỗi khi tải chi tiết sách:", err);
@@ -52,7 +53,7 @@ const BookDetailModal = ({ show, handleClose, bookId }) => {
     const getCoverImageUrl = (path) => {
         if (!path) return 'https://source.unsplash.com/500x650/?book,cover';
         if (path.startsWith('http')) return path;
-        return `http://localhost:8080${path}`;
+        return `${API_BASE}${path}`;
     };
 
     return (

@@ -1,10 +1,12 @@
+import { API_BASE } from './config';
+
 // Test API connection
 const testApiConnection = async () => {
     console.log('Testing API connection...');
     
     try {
         // Test basic connectivity
-        const response = await fetch('http://localhost:8080/admin/stats', {
+        const response = await fetch('${API_BASE}/admin/stats', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -34,7 +36,7 @@ const testCors = async () => {
     console.log('Testing CORS...');
     
     try {
-        const response = await fetch('http://localhost:8080/admin/stats', {
+        const response = await fetch('${API_BASE}/admin/stats', {
             method: 'OPTIONS',
             headers: {
                 'Origin': 'http://localhost:3000',

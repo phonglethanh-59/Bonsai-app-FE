@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form } from 'react-bootstrap'; // Giả sử bạn dùng react-bootstrap
+import { Modal, Button, Form } from 'react-bootstrap';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
+import { API_BASE } from '../../utils/config';
 
 const FirstLoginModal = () => {
     const { showFirstLogin, setShowFirstLogin, user, refreshUser } = useAuth();
@@ -42,7 +43,7 @@ const FirstLoginModal = () => {
         }
 
         try {
-            const response = await axios.post('http://localhost:8080/api/customers/profile/update', formData, {
+            const response = await axios.post(`${API_BASE}/api/customers/profile/update`, formData, {
                 withCredentials: true,
             });
             

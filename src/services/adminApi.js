@@ -1,6 +1,7 @@
 // src/services/adminApi.js
+import { API_BASE } from '../utils/config';
 
-const API_BASE_URL = 'http://localhost:8080/admin';
+const API_BASE_URL = `${API_BASE}/admin`;
 
 const handleResponse = async (response) => {
     if (!response.ok) {
@@ -56,14 +57,14 @@ const adminApi = {
     },
 
     updateUser: (userId, userData) => {
-        return apiRequest(`${API_BASE_URL}/${userId}`, {
+        return apiRequest(`${API_BASE_URL}/users/${userId}`, {
             method: 'PUT',
             body: JSON.stringify(userData),
         });
     },
 
     updateUserRole: (userId, role) => {
-        return apiRequest(`${API_BASE_URL}/${userId}/role`, {
+        return apiRequest(`${API_BASE_URL}/users/${userId}/role`, {
             method: 'PUT',
             body: JSON.stringify({ role }),
         });
@@ -85,7 +86,7 @@ const adminApi = {
     getProducts: (params = {}) => {
         const filteredParams = Object.fromEntries(Object.entries(params).filter(([_, v]) => v != null));
         const queryParams = new URLSearchParams(filteredParams).toString();
-        return apiRequest(`http://localhost:8080/api/products?${queryParams}`);
+        return apiRequest(`${API_BASE}/api/products?${queryParams}`);
     },
 
     createProduct: (productData) => {
@@ -110,7 +111,7 @@ const adminApi = {
 
     // ===================== CATEGORY MANAGEMENT =====================
     getCategories: () => {
-        return apiRequest(`http://localhost:8080/api/categories`);
+        return apiRequest(`${API_BASE}/api/categories`);
     },
 
     createCategory: (categoryData) => {

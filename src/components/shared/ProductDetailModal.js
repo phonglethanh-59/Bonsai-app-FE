@@ -4,7 +4,7 @@ import { Modal, Button, Row, Col, Spinner } from 'react-bootstrap';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 
-const API_BASE = 'http://localhost:8080';
+import { API_BASE, formatPrice } from '../../utils/config';
 
 const ReviewItem = ({ review }) => {
     const stars = Array.from({ length: 5 }, (_, i) => (
@@ -22,6 +22,58 @@ const ReviewItem = ({ review }) => {
     );
 };
 
+const ReviewForm = ({ productId, onReviewSubmitted }) => {
+    const [rating, setRating] = useState(5);
+    const [comment, setComment] = useState('');
+    const [submitting, setSubmitting] = useState(false);
+    const [error, setError] = useState('');
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setSubmitting(true);
+        setError('');
+        try {
+            await axios.post(`${API_BASE}/api/reviews`,
+                { productId, rating, comment },
+                { withCredentials: true, headers: { 'Content-Type': 'application/json' } }
+            );
+            setComment('');
+            setRating(5);
+            onReviewSubmitted();
+        } catch (err) {
+            setError(err.response?.data?.message || 'Khong the gui danh gia.');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    return (
+        <form onSubmit={handleSubmit} className="mt-3 p-3 border rounded bg-light">
+            <h6 className="mb-2">Viet danh gia</h6>
+            {error && <div className="alert alert-danger py-1 small">{error}</div>}
+            <div className="mb-2">
+                <label className="form-label small fw-bold">Sao</label>
+                <div>
+                    {[1, 2, 3, 4, 5].map(star => (
+                        <i key={star}
+                           className={`fas fa-star me-1 ${star <= rating ? 'text-warning' : 'text-muted'}`}
+                           style={{ cursor: 'pointer', fontSize: '1.2rem' }}
+                           onClick={() => setRating(star)} />
+                    ))}
+                </div>
+            </div>
+            <div className="mb-2">
+                <textarea className="form-control form-control-sm" rows="2"
+                    placeholder="Nhan xet cua ban..."
+                    value={comment} onChange={e => setComment(e.target.value)} required />
+            </div>
+            <button type="submit" className="btn btn-sm btn-primary" disabled={submitting}>
+                {submitting ? 'Dang gui...' : 'Gui danh gia'}
+            </button>
+        </form>
+    );
+};
+
 const ProductDetailModal = ({ show, handleClose, productId }) => {
     const [product, setProduct] = useState(null);
     const [reviews, setReviews] = useState([]);
@@ -30,37 +82,44 @@ const ProductDetailModal = ({ show, handleClose, productId }) => {
     const { addToCart } = useCart();
     const { isAuthenticated } = useAuth();
 
+    const fetchDetails = async () => {
+        setLoading(true);
+        setError('');
+        try {
+            const [productRes, reviewsRes] = await Promise.all([
+                axios.get(`${API_BASE}/api/products/${productId}`),
+                axios.get(`${API_BASE}/api/reviews/product/${productId}`)
+            ]);
+            setProduct(productRes.data);
+            setReviews(reviewsRes.data?.content || []);
+        } catch (err) {
+            setError('Khong the tai thong tin chi tiet san pham.');
+            console.error("Loi:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
         if (show && productId) {
-            const fetchDetails = async () => {
-                setLoading(true);
-                setError('');
-                try {
-                    const [productRes, reviewsRes] = await Promise.all([
-                        axios.get(`${API_BASE}/api/products/${productId}`),
-                        axios.get(`${API_BASE}/api/reviews/product/${productId}`)
-                    ]);
-                    setProduct(productRes.data);
-                    setReviews(reviewsRes.data);
-                } catch (err) {
-                    setError('Khong the tai thong tin chi tiet san pham.');
-                    console.error("Loi:", err);
-                } finally {
-                    setLoading(false);
-                }
-            };
             fetchDetails();
         }
     }, [show, productId]);
+
+    const handleReviewSubmitted = async () => {
+        // Refresh reviews sau khi submit
+        try {
+            const reviewsRes = await axios.get(`${API_BASE}/api/reviews/product/${productId}`);
+            setReviews(reviewsRes.data?.content || []);
+        } catch (err) {
+            console.error("Loi khi tai lai review:", err);
+        }
+    };
 
     const getCoverImageUrl = (path) => {
         if (!path) return 'https://placehold.co/500x650?text=Bonsai';
         if (path.startsWith('http')) return path;
         return `${API_BASE}${path}`;
-    };
-
-    const formatPrice = (price) => {
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
     };
 
     const careLevelLabels = {
@@ -114,6 +173,9 @@ const ProductDetailModal = ({ show, handleClose, productId }) => {
                                     reviews.map((review, idx) => <ReviewItem key={idx} review={review} />)
                                 ) : (
                                     <p className="text-muted small">Chua co danh gia nao cho san pham nay.</p>
+                                )}
+                                {isAuthenticated && (
+                                    <ReviewForm productId={productId} onReviewSubmitted={handleReviewSubmitted} />
                                 )}
                             </div>
                         </Col>

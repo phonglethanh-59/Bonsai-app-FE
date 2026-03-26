@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Modal, Spinner } from 'react-bootstrap';
 
-const API_BASE = 'http://localhost:8080';
+import { API_BASE, formatPrice } from '../../utils/config';
 
 const statusLabels = {
     PENDING: { text: 'Cho xu ly', class: 'bg-warning' },
@@ -22,7 +22,7 @@ const OrderHistoryModal = ({ show, handleClose }) => {
                 setLoading(true);
                 try {
                     const res = await axios.get(`${API_BASE}/api/orders`, { withCredentials: true });
-                    setOrders(res.data || []);
+                    setOrders(res.data?.content || []);
                 } catch (error) {
                     console.error('Loi khi tai don hang:', error);
                 } finally {
@@ -32,10 +32,6 @@ const OrderHistoryModal = ({ show, handleClose }) => {
             fetchOrders();
         }
     }, [show]);
-
-    const formatPrice = (price) => {
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
-    };
 
     const formatDate = (dateStr) => {
         return new Date(dateStr).toLocaleDateString('vi-VN', {

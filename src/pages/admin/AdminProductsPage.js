@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { FiRefreshCw, FiEdit, FiTrash2, FiPlus, FiX } from 'react-icons/fi';
 import adminApi from '../../services/adminApi';
-
-const formatPrice = (price) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+import { formatPrice } from '../../utils/config';
 
 const ProductModal = ({ isOpen, onClose, onSave, product, categories }) => {
     const [form, setForm] = useState({

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Modal, Button, Spinner } from 'react-bootstrap';
+import { API_BASE } from '../../utils/config';
 
 const BorrowedBooksModal = ({ show, handleClose }) => {
     const [borrowedBooks, setBorrowedBooks] = useState([]);
@@ -13,7 +14,7 @@ const BorrowedBooksModal = ({ show, handleClose }) => {
                 setLoading(true);
                 setError('');
                 try {
-                    const response = await axios.get('http://localhost:8080/api/readers/borrowed-books', {
+                    const response = await axios.get('${API_BASE}/api/readers/borrowed-books', {
                         withCredentials: true,
                     });
                     setBorrowedBooks(response.data);
@@ -30,7 +31,7 @@ const BorrowedBooksModal = ({ show, handleClose }) => {
     const getCoverImageUrl = (path) => {
         if (!path) return 'https://source.unsplash.com/80x120/?book,cover';
         if (path.startsWith('http')) return path;
-        return `http://localhost:8080${path}`;
+        return `${API_BASE}${path}`;
     };
 
     return (

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { useBorrowCart } from '../../context/BorrowCartContext';
+import { API_BASE } from '../../utils/config';
 const BorrowCart = () => {
     const { cartItems, removeFromCart, clearCart } = useBorrowCart();
     const [isOpen, setIsOpen] = useState(false);
@@ -18,7 +19,7 @@ const BorrowCart = () => {
         }
         try {
             const bookIds = cartItems.map(item => item.id);
-            const response = await axios.post('http://localhost:8080/api/borrow', { bookIds }, {
+            const response = await axios.post('${API_BASE}/api/borrow', { bookIds }, {
                 withCredentials: true
             });
             alert(response.data.message);
@@ -32,7 +33,7 @@ const BorrowCart = () => {
      const getCoverImageUrl = (path) => {
         if (!path) return 'https://source.unsplash.com/50x75/?book,cover';
         if (path.startsWith('http')) return path;
-        return `http://localhost:8080${path}`;
+        return `${API_BASE}${path}`;
     };
     return (
         <div className={`borrow-cart-container ${isOpen ? 'active' : ''}`}>

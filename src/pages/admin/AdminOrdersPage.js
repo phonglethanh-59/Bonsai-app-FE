@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { FiRefreshCw, FiEye, FiX } from 'react-icons/fi';
 import adminApi from '../../services/adminApi';
-
-const formatPrice = (price) => new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+import { formatPrice } from '../../utils/config';
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
 
 const statusConfig = {

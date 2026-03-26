@@ -2,7 +2,7 @@ import React, { createContext, useState, useContext, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
 
-const API_BASE = 'http://localhost:8080';
+import { API_BASE } from '../utils/config';
 const CartContext = createContext(null);
 
 export const CartProvider = ({ children }) => {
@@ -16,7 +16,7 @@ export const CartProvider = ({ children }) => {
         try {
             setLoading(true);
             const response = await axios.get(`${API_BASE}/api/cart`, { withCredentials: true });
-            setCartItems(response.data || []);
+            setCartItems(response.data?.content || []);
         } catch (error) {
             console.error('Lỗi khi tải giỏ hàng:', error);
         } finally {

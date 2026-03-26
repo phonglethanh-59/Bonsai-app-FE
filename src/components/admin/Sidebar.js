@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { API_BASE } from '../../utils/config';
 import {
     FiHome, FiUsers, FiPackage, FiGrid, FiShoppingCart,
     FiSettings, FiLogOut, FiChevronLeft, FiChevronRight
@@ -135,7 +136,7 @@ const Sidebar = ({ role }) => {
 
                 <div className="admin-space-y-1">
                     <a
-                        href="http://localhost:8080/auth/logout"
+                        href={`${API_BASE}/auth/logout`}
                         className="admin-w-full admin-flex admin-items-center admin-px-4 admin-py-3 admin-text-left hover:admin-bg-red-600 transition-colors duration-200"
                     >
                         <FiLogOut size={20} className="flex-shrink-0" />

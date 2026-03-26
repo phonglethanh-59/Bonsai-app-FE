@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 
-const API_BASE = 'http://localhost:8080';
+import { API_BASE, formatPrice } from '../../utils/config';
 
 const ShoppingCart = () => {
     const { cartItems, removeFromCart, updateCartItem, clearCart, getCartTotal, getCartCount } = useCart();
@@ -17,10 +17,6 @@ const ShoppingCart = () => {
         paymentMethod: 'COD'
     });
     const [ordering, setOrdering] = useState(false);
-
-    const formatPrice = (price) => {
-        return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
-    };
 
     const getCoverImageUrl = (path) => {
         if (!path) return 'https://placehold.co/40x60?text=Bonsai';

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
+import { API_BASE } from '../../utils/config';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
 
 const ProfileModal = ({ show, handleClose }) => {
@@ -50,14 +51,14 @@ const ProfileModal = ({ show, handleClose }) => {
             if (avatarFile) {
                 const avatarFormData = new FormData();
                 avatarFormData.append('avatarFile', avatarFile);
-                const avatarRes = await axios.post('http://localhost:8080/api/customers/profile/avatar', avatarFormData, {
+                const avatarRes = await axios.post('${API_BASE}/api/customers/profile/avatar', avatarFormData, {
                     withCredentials: true,
                 });
                 avatarUrl = avatarRes.data.avatarUrl; // Lấy URL mới
             }
 
             // Bước 2: Cập nhật thông tin text
-            await axios.post('http://localhost:8080/api/customers/profile/update', formData, {
+            await axios.post('${API_BASE}/api/customers/profile/update', formData, {
                 withCredentials: true,
             });
 
@@ -87,7 +88,7 @@ const ProfileModal = ({ show, handleClose }) => {
             <Modal.Body>
                 {error && <div className="alert alert-danger">{error}</div>}
                 <div className="text-center mb-4">
-                    <img src={'/images/default-avatar.jpg'} alt="Avatar" className="rounded-circle" width="120" height="120" style={{ objectFit: 'cover' }} />
+                    <img src={preview ? (preview.startsWith('blob:') ? preview : `${API_BASE}${preview}`) : '/images/default-avatar.jpg'} alt="Avatar" className="rounded-circle" width="120" height="120" style={{ objectFit: 'cover' }} />
                     <input type="file" ref={fileInputRef} onChange={handleFileChange} className="d-none" accept="image/*" />
                     <Button variant="outline-primary" size="sm" className="mt-2" onClick={() => fileInputRef.current.click()}>
                         <i className="fas fa-camera"></i> Đổi ảnh

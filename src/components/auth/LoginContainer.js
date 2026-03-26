@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { API_BASE } from '../../utils/config';
 
 const LoginContainer = ({ loginError }) => {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
@@ -15,7 +16,7 @@ const LoginContainer = ({ loginError }) => {
                         <div className="card-body">
                             {loginError && <div className="alert alert-danger p-2 small">Tên đăng nhập hoặc mật khẩu không chính xác.</div>}
 
-                            <form action="http://localhost:8080/auth/login" method="POST">
+                            <form action={`${API_BASE}/auth/login`} method="POST">
                                 <div className="mb-4">
                                     <label htmlFor="username" className="form-label">Tên đăng nhập</label>
                                     <input
