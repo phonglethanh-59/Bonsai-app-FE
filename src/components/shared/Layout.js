@@ -5,6 +5,7 @@ import Navbar from './Navbar';
 import Footer from './Footer';
 import FirstLoginModal from './FirstLoginModal';
 import ShoppingCart from './ShoppingCart';
+import AIChat from './AIChat';
 
 const Layout = () => {
     useEffect(() => {
@@ -36,6 +37,7 @@ const Layout = () => {
                 <Outlet />
             </main>
             <Footer />
+            <AIChat />
         </>
     );
 };
