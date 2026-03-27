@@ -2,6 +2,7 @@ import React, { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { WishlistProvider } from './context/WishlistContext';
 import ErrorBoundary from './components/shared/ErrorBoundary';
 
 // Trang chính - load ngay
@@ -16,6 +17,8 @@ import ForbiddenPage from './pages/error/ForbiddenPage';
 import CategoriesPage from './pages/home/CategoriesPage';
 import ProductDetailPage from './pages/home/ProductDetailPage';
 import OrdersPage from './pages/home/OrdersPage';
+import WishlistPage from './pages/home/WishlistPage';
+import CartPage from './pages/home/CartPage';
 
 // Admin pages - lazy load (chỉ tải khi cần)
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
@@ -23,6 +26,8 @@ const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage')
 const AdminProductsPage = lazy(() => import('./pages/admin/AdminProductsPage'));
 const AdminCategoriesPage = lazy(() => import('./pages/admin/AdminCategoriesPage'));
 const AdminOrdersPage = lazy(() => import('./pages/admin/AdminOrdersPage'));
+const AdminReviewsPage = lazy(() => import('./pages/admin/AdminReviewsPage'));
+const AdminReportsPage = lazy(() => import('./pages/admin/AdminReportsPage'));
 
 const LoadingFallback = () => (
     <div className="text-center p-5">
@@ -48,6 +53,7 @@ function App() {
     <ErrorBoundary>
       <AuthProvider>
         <CartProvider>
+          <WishlistProvider>
           <Router>
             <Suspense fallback={<LoadingFallback />}>
               <Routes>
@@ -68,6 +74,8 @@ function App() {
                   <Route path="products" element={<AdminProductsPage />} />
                   <Route path="categories" element={<AdminCategoriesPage />} />
                   <Route path="orders" element={<AdminOrdersPage />} />
+                  <Route path="reviews" element={<AdminReviewsPage />} />
+                  <Route path="reports" element={<AdminReportsPage />} />
                 </Route>
 
                 {/* Trang chính */}
@@ -82,6 +90,16 @@ function App() {
                       <OrdersPage />
                     </ProtectedRoute>
                   } />
+                  <Route path="wishlist" element={
+                    <ProtectedRoute>
+                      <WishlistPage />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="cart" element={
+                    <ProtectedRoute>
+                      <CartPage />
+                    </ProtectedRoute>
+                  } />
                 </Route>
 
                 {/* Error pages */}
@@ -90,6 +108,7 @@ function App() {
               </Routes>
             </Suspense>
           </Router>
+          </WishlistProvider>
         </CartProvider>
       </AuthProvider>
     </ErrorBoundary>

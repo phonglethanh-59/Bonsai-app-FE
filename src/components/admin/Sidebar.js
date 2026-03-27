@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { API_BASE } from '../../utils/config';
 import {
     FiHome, FiUsers, FiPackage, FiGrid, FiShoppingCart,
-    FiSettings, FiLogOut, FiChevronLeft, FiChevronRight
+    FiSettings, FiLogOut, FiChevronLeft, FiChevronRight, FiMessageSquare, FiBarChart2
 } from 'react-icons/fi';
 
 const Sidebar = ({ role }) => {
@@ -42,6 +42,18 @@ const Sidebar = ({ role }) => {
             label: 'Quan ly Don hang',
             icon: FiShoppingCart,
             path: '/admin/orders'
+        },
+        {
+            id: 'review-management',
+            label: 'Quan ly Danh gia',
+            icon: FiMessageSquare,
+            path: '/admin/reviews'
+        },
+        {
+            id: 'reports',
+            label: 'Bao cao Doanh thu',
+            icon: FiBarChart2,
+            path: '/admin/reports'
         },
     ];
 

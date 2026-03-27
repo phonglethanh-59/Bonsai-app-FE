@@ -38,6 +38,10 @@ const adminApi = {
         return apiRequest(`${API_BASE_URL}/stats`);
     },
 
+    getAdvancedDashboardStats: () => {
+        return apiRequest(`${API_BASE_URL}/dashboard-stats`);
+    },
+
     // ===================== USER MANAGEMENT =====================
     getUsers: (params = {}) => {
         const filteredParams = Object.fromEntries(Object.entries(params).filter(([_, v]) => v != null));
@@ -134,6 +138,19 @@ const adminApi = {
         });
     },
 
+    // ===================== REVIEW MANAGEMENT =====================
+    getReviews: (params = {}) => {
+        const filteredParams = Object.fromEntries(Object.entries(params).filter(([_, v]) => v != null));
+        const queryParams = new URLSearchParams(filteredParams).toString();
+        return apiRequest(`${API_BASE_URL}/reviews?${queryParams}`);
+    },
+
+    deleteReview: (reviewId) => {
+        return apiRequest(`${API_BASE_URL}/reviews/${reviewId}`, {
+            method: 'DELETE',
+        });
+    },
+
     // ===================== ORDER MANAGEMENT =====================
     getOrders: (params = {}) => {
         const filteredParams = Object.fromEntries(Object.entries(params).filter(([_, v]) => v != null));
@@ -146,6 +163,53 @@ const adminApi = {
             method: 'PUT',
             body: JSON.stringify({ status }),
         });
+    },
+
+    // ===================== EXPORT & REPORTS =====================
+    exportOrdersExcel: (params = {}) => {
+        const filteredParams = Object.fromEntries(Object.entries(params).filter(([_, v]) => v != null && v !== ''));
+        const queryParams = new URLSearchParams(filteredParams).toString();
+        return fetch(`${API_BASE_URL}/reports/orders/excel?${queryParams}`, { credentials: 'include' })
+            .then(res => {
+                if (!res.ok) throw new Error('Export failed');
+                return res.blob();
+            });
+    },
+
+    exportOrdersPdf: (params = {}) => {
+        const filteredParams = Object.fromEntries(Object.entries(params).filter(([_, v]) => v != null && v !== ''));
+        const queryParams = new URLSearchParams(filteredParams).toString();
+        return fetch(`${API_BASE_URL}/reports/orders/pdf?${queryParams}`, { credentials: 'include' })
+            .then(res => {
+                if (!res.ok) throw new Error('Export failed');
+                return res.blob();
+            });
+    },
+
+    getRevenueReport: (params = {}) => {
+        const filteredParams = Object.fromEntries(Object.entries(params).filter(([_, v]) => v != null && v !== ''));
+        const queryParams = new URLSearchParams(filteredParams).toString();
+        return apiRequest(`${API_BASE_URL}/reports/revenue?${queryParams}`);
+    },
+
+    exportRevenueExcel: (params = {}) => {
+        const filteredParams = Object.fromEntries(Object.entries(params).filter(([_, v]) => v != null && v !== ''));
+        const queryParams = new URLSearchParams(filteredParams).toString();
+        return fetch(`${API_BASE_URL}/reports/revenue/excel?${queryParams}`, { credentials: 'include' })
+            .then(res => {
+                if (!res.ok) throw new Error('Export failed');
+                return res.blob();
+            });
+    },
+
+    exportRevenuePdf: (params = {}) => {
+        const filteredParams = Object.fromEntries(Object.entries(params).filter(([_, v]) => v != null && v !== ''));
+        const queryParams = new URLSearchParams(filteredParams).toString();
+        return fetch(`${API_BASE_URL}/reports/revenue/pdf?${queryParams}`, { credentials: 'include' })
+            .then(res => {
+                if (!res.ok) throw new Error('Export failed');
+                return res.blob();
+            });
     },
 };
 

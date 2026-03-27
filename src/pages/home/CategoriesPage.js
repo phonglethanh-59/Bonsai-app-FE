@@ -3,12 +3,27 @@ import axios from 'axios';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { useWishlist } from '../../context/WishlistContext';
 
 import { API_BASE, formatPrice } from '../../utils/config';
 
 const ProductCard = ({ product, onViewDetails }) => {
     const { addToCart } = useCart();
     const { isAuthenticated } = useAuth();
+    const { isInWishlist, toggleWishlist } = useWishlist();
+
+    const handleToggleWishlist = async (e) => {
+        e.stopPropagation();
+        if (!isAuthenticated) {
+            alert('Vui long dang nhap de su dung danh sach yeu thich.');
+            return;
+        }
+        try {
+            await toggleWishlist(product.id);
+        } catch (err) {
+            alert(err.message);
+        }
+    };
 
     const getCoverImageUrl = (path) => {
         if (!path) return 'https://placehold.co/500x650?text=Bonsai';
@@ -46,12 +61,37 @@ const ProductCard = ({ product, onViewDetails }) => {
     return (
         <div className="col">
             <div className="book-card h-100" style={{ cursor: 'pointer' }} onClick={() => onViewDetails(product.id)}>
-                <div className="book-thumb">
+                <div className="book-thumb" style={{ position: 'relative' }}>
                     <img src={imageUrl} alt={product.name} />
                     <span className="book-category">{product.category?.name || 'Chua phan loai'}</span>
                     <span className={`book-availability ${product.stockQuantity > 0 ? '' : 'borrowed'}`}>
                         {product.stockQuantity > 0 ? 'Con hang' : 'Het hang'}
                     </span>
+                    <button
+                        className="btn btn-sm wishlist-heart-btn"
+                        onClick={handleToggleWishlist}
+                        title={isInWishlist(product.id) ? 'Xoa khoi yeu thich' : 'Them vao yeu thich'}
+                        style={{
+                            position: 'absolute',
+                            top: '10px',
+                            right: '10px',
+                            background: 'rgba(255,255,255,0.9)',
+                            border: 'none',
+                            borderRadius: '50%',
+                            width: '36px',
+                            height: '36px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            zIndex: 2,
+                            boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
+                            transition: 'transform 0.2s'
+                        }}
+                    >
+                        <i className={`${isInWishlist(product.id) ? 'fas' : 'far'} fa-heart`}
+                           style={{ color: isInWishlist(product.id) ? '#e74c3c' : '#999', fontSize: '1rem' }}></i>
+                    </button>
                 </div>
                 <div className="book-info d-flex flex-column">
                     <h5 className="book-title">{product.name}</h5>

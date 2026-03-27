@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { NavLink, Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
+import { useWishlist } from '../../context/WishlistContext';
 import { API_BASE } from '../../utils/config';
 import ProfileModal from './ProfileModal';
 
@@ -10,13 +11,15 @@ const Navbar = () => {
     const navigate = useNavigate();
     const { isAuthenticated, user, loading, logout } = useAuth();
     const { getCartCount, fetchCart } = useCart();
+    const { getWishlistCount, fetchWishlist } = useWishlist();
     const [showProfileModal, setShowProfileModal] = useState(false);
 
     useEffect(() => {
         if (isAuthenticated) {
             fetchCart();
+            fetchWishlist();
         }
-    }, [isAuthenticated, fetchCart]);
+    }, [isAuthenticated, fetchCart, fetchWishlist]);
 
     const handleLogout = (e) => {
         e.preventDefault();
@@ -84,6 +87,22 @@ const Navbar = () => {
                                             <li>
                                                 <a href="/#" className="dropdown-item" onClick={(e) => { e.preventDefault(); navigate('/orders'); }}>
                                                     <i className="fas fa-shopping-bag me-2"></i>Don hang cua toi
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/#" className="dropdown-item d-flex align-items-center" onClick={(e) => { e.preventDefault(); navigate('/wishlist'); }}>
+                                                    <i className="fas fa-heart me-2 text-danger"></i>Yeu thich
+                                                    {getWishlistCount() > 0 && (
+                                                        <span className="badge bg-danger rounded-pill ms-auto">{getWishlistCount()}</span>
+                                                    )}
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/#" className="dropdown-item d-flex align-items-center" onClick={(e) => { e.preventDefault(); navigate('/cart'); }}>
+                                                    <i className="fas fa-shopping-cart me-2 text-success"></i>Gio hang
+                                                    {getCartCount() > 0 && (
+                                                        <span className="badge bg-success rounded-pill ms-auto">{getCartCount()}</span>
+                                                    )}
                                                 </a>
                                             </li>
                                             {user?.role === 'ADMIN' && (

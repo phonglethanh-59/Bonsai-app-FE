@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { FiRefreshCw, FiEye, FiX } from 'react-icons/fi';
+import { FiRefreshCw, FiEye, FiX, FiDownload } from 'react-icons/fi';
 import adminApi from '../../services/adminApi';
 import { formatPrice } from '../../utils/config';
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
@@ -83,6 +83,7 @@ const AdminOrdersPage = () => {
     const [pagination, setPagination] = useState({ currentPage: 1, perPage: 10, totalPages: 0, total: 0 });
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [showDetail, setShowDetail] = useState(false);
+    const [exporting, setExporting] = useState(false);
 
     const loadOrders = useCallback(async () => {
         setIsLoading(true);
@@ -123,10 +124,51 @@ const AdminOrdersPage = () => {
         setShowDetail(true);
     };
 
+    const downloadBlob = (blob, filename) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+    };
+
+    const handleExport = async (type) => {
+        setExporting(true);
+        try {
+            const params = { status: statusFilter || undefined };
+            if (type === 'excel') {
+                const blob = await adminApi.exportOrdersExcel(params);
+                downloadBlob(blob, `don-hang_${new Date().toLocaleDateString('vi-VN').replace(/\//g, '')}.xlsx`);
+            } else {
+                const blob = await adminApi.exportOrdersPdf(params);
+                downloadBlob(blob, `don-hang_${new Date().toLocaleDateString('vi-VN').replace(/\//g, '')}.pdf`);
+            }
+        } catch (err) {
+            alert('Lỗi xuất file: ' + err.message);
+        } finally {
+            setExporting(false);
+        }
+    };
+
     return (
         <div className="admin-page">
             <div className="admin-space-y-6">
-                <h1 className="admin-text-2xl admin-font-bold admin-text-gray-900">Quản lý đơn hàng</h1>
+                <div className="admin-flex admin-items-center admin-justify-between" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <h1 className="admin-text-2xl admin-font-bold admin-text-gray-900">Quản lý đơn hàng</h1>
+                    <div className="admin-flex admin-space-x-2">
+                        <button onClick={() => handleExport('excel')} disabled={exporting}
+                            className="admin-button" style={{ background: '#059669', color: 'white', display: 'flex', alignItems: 'center', gap: '0.375rem', padding: '0.5rem 1rem', fontSize: '0.875rem', border: 'none', borderRadius: '0.375rem', cursor: exporting ? 'not-allowed' : 'pointer', opacity: exporting ? 0.6 : 1 }}>
+                            <FiDownload size={16} /> Excel
+                        </button>
+                        <button onClick={() => handleExport('pdf')} disabled={exporting}
+                            className="admin-button" style={{ background: '#dc2626', color: 'white', display: 'flex', alignItems: 'center', gap: '0.375rem', padding: '0.5rem 1rem', fontSize: '0.875rem', border: 'none', borderRadius: '0.375rem', cursor: exporting ? 'not-allowed' : 'pointer', opacity: exporting ? 0.6 : 1 }}>
+                            <FiDownload size={16} /> PDF
+                        </button>
+                    </div>
+                </div>
 
                 {/* Status Filter Tabs */}
                 <div className="admin-flex admin-space-x-2" style={{ flexWrap: 'wrap', gap: '0.5rem' }}>

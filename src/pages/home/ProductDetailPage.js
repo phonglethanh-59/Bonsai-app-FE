@@ -4,8 +4,10 @@ import axios from 'axios';
 import { API_BASE, formatPrice } from '../../utils/config';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
+import { useWishlist } from '../../context/WishlistContext';
 
-const ReviewItem = ({ review }) => {
+const ReviewItem = ({ review, currentUserId, onDelete, onEdit }) => {
+    const isOwner = currentUserId && review.userId === currentUserId;
     const stars = Array.from({ length: 5 }, (_, i) => (
         <i key={i} className={`fas fa-star ${i < review.rating ? 'text-warning' : 'text-light'}`}></i>
     ));
@@ -13,7 +15,19 @@ const ReviewItem = ({ review }) => {
         <div className="review-item mb-3 p-3 border rounded">
             <div className="d-flex justify-content-between align-items-center">
                 <strong>{review.reviewerName}</strong>
-                <small className="text-muted">{review.reviewDate}</small>
+                <div className="d-flex align-items-center gap-2">
+                    <small className="text-muted">{review.reviewDate}</small>
+                    {isOwner && (
+                        <div className="d-flex gap-1">
+                            <button className="btn btn-sm btn-outline-primary py-0 px-1" onClick={() => onEdit(review)} title="Sua">
+                                <i className="fas fa-edit" style={{fontSize: '0.75rem'}}></i>
+                            </button>
+                            <button className="btn btn-sm btn-outline-danger py-0 px-1" onClick={() => onDelete(review.id)} title="Xoa">
+                                <i className="fas fa-trash" style={{fontSize: '0.75rem'}}></i>
+                            </button>
+                        </div>
+                    )}
+                </div>
             </div>
             <div className="review-stars my-1">{stars}</div>
             <p className="mb-0 fst-italic text-muted">"{review.comment}"</p>
@@ -21,23 +35,41 @@ const ReviewItem = ({ review }) => {
     );
 };
 
-const ReviewForm = ({ productId, onReviewSubmitted }) => {
-    const [rating, setRating] = useState(5);
-    const [comment, setComment] = useState('');
+const ReviewForm = ({ productId, onReviewSubmitted, editingReview, onCancelEdit }) => {
+    const [rating, setRating] = useState(editingReview ? editingReview.rating : 5);
+    const [comment, setComment] = useState(editingReview ? editingReview.comment : '');
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
+
+    React.useEffect(() => {
+        if (editingReview) {
+            setRating(editingReview.rating);
+            setComment(editingReview.comment);
+        } else {
+            setRating(5);
+            setComment('');
+        }
+    }, [editingReview]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
         setError('');
         try {
-            await axios.post(`${API_BASE}/api/reviews`,
-                { productId, rating, comment },
-                { withCredentials: true, headers: { 'Content-Type': 'application/json' } }
-            );
+            if (editingReview) {
+                await axios.put(`${API_BASE}/api/reviews/${editingReview.id}`,
+                    { rating, comment },
+                    { withCredentials: true, headers: { 'Content-Type': 'application/json' } }
+                );
+            } else {
+                await axios.post(`${API_BASE}/api/reviews`,
+                    { productId, rating, comment },
+                    { withCredentials: true, headers: { 'Content-Type': 'application/json' } }
+                );
+            }
             setComment('');
             setRating(5);
+            if (onCancelEdit) onCancelEdit();
             onReviewSubmitted();
         } catch (err) {
             setError(err.response?.data?.message || 'Khong the gui danh gia.');
@@ -48,7 +80,7 @@ const ReviewForm = ({ productId, onReviewSubmitted }) => {
 
     return (
         <form onSubmit={handleSubmit} className="mt-4 p-3 border rounded bg-light">
-            <h6 className="mb-3">Viet danh gia cua ban</h6>
+            <h6 className="mb-3">{editingReview ? 'Sua danh gia' : 'Viet danh gia cua ban'}</h6>
             {error && <div className="alert alert-danger py-1 small">{error}</div>}
             <div className="mb-3">
                 <label className="form-label small fw-bold">Danh gia sao</label>
@@ -66,9 +98,16 @@ const ReviewForm = ({ productId, onReviewSubmitted }) => {
                     placeholder="Chia se trai nghiem cua ban ve san pham nay..."
                     value={comment} onChange={e => setComment(e.target.value)} required />
             </div>
-            <button type="submit" className="btn btn-primary" disabled={submitting}>
-                {submitting ? 'Dang gui...' : 'Gui danh gia'}
-            </button>
+            <div className="d-flex gap-2">
+                <button type="submit" className="btn btn-primary" disabled={submitting}>
+                    {submitting ? 'Dang gui...' : (editingReview ? 'Cap nhat' : 'Gui danh gia')}
+                </button>
+                {editingReview && (
+                    <button type="button" className="btn btn-secondary" onClick={onCancelEdit}>
+                        Huy
+                    </button>
+                )}
+            </div>
         </form>
     );
 };
@@ -82,8 +121,22 @@ const ProductDetailPage = () => {
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState('intro');
     const [quantity, setQuantity] = useState(1);
+    const [editingReview, setEditingReview] = useState(null);
     const { addToCart } = useCart();
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, user } = useAuth();
+    const { isInWishlist, toggleWishlist } = useWishlist();
+
+    const handleToggleWishlist = async () => {
+        if (!isAuthenticated) {
+            alert('Vui long dang nhap de su dung danh sach yeu thich.');
+            return;
+        }
+        try {
+            await toggleWishlist(product.id);
+        } catch (err) {
+            alert(err.message);
+        }
+    };
 
     const careLevelLabels = {
         EASY: 'De cham soc',
@@ -135,6 +188,20 @@ const ProductDetailPage = () => {
         } catch (err) {
             console.error('Loi tai review:', err);
         }
+    };
+
+    const handleDeleteReview = async (reviewId) => {
+        if (!window.confirm('Ban co chac muon xoa danh gia nay?')) return;
+        try {
+            await axios.delete(`${API_BASE}/api/reviews/${reviewId}`, { withCredentials: true });
+            refreshReviews();
+        } catch (err) {
+            alert(err.response?.data?.message || 'Khong the xoa danh gia.');
+        }
+    };
+
+    const handleEditReview = (review) => {
+        setEditingReview(review);
     };
 
     if (loading) {
@@ -204,15 +271,26 @@ const ProductDetailPage = () => {
                             </span>
                         </div>
 
-                        {isAuthenticated && product.stockQuantity > 0 && (
+                        {isAuthenticated && (
                             <div className="d-flex align-items-center gap-3">
-                                <div className="input-group" style={{ width: '130px' }}>
-                                    <button className="btn btn-outline-secondary" onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
-                                    <input type="text" className="form-control text-center" value={quantity} readOnly />
-                                    <button className="btn btn-outline-secondary" onClick={() => setQuantity(Math.min(product.stockQuantity, quantity + 1))}>+</button>
-                                </div>
-                                <button className="btn btn-success btn-lg" onClick={handleAddToCart}>
-                                    <i className="fas fa-cart-plus me-2"></i>Them vao gio
+                                {product.stockQuantity > 0 && (
+                                    <>
+                                        <div className="input-group" style={{ width: '130px' }}>
+                                            <button className="btn btn-outline-secondary" onClick={() => setQuantity(Math.max(1, quantity - 1))}>-</button>
+                                            <input type="text" className="form-control text-center" value={quantity} readOnly />
+                                            <button className="btn btn-outline-secondary" onClick={() => setQuantity(Math.min(product.stockQuantity, quantity + 1))}>+</button>
+                                        </div>
+                                        <button className="btn btn-success btn-lg" onClick={handleAddToCart}>
+                                            <i className="fas fa-cart-plus me-2"></i>Them vao gio
+                                        </button>
+                                    </>
+                                )}
+                                <button
+                                    className={`btn btn-lg ${isInWishlist(product.id) ? 'btn-danger' : 'btn-outline-danger'}`}
+                                    onClick={handleToggleWishlist}
+                                    title={isInWishlist(product.id) ? 'Xoa khoi yeu thich' : 'Them vao yeu thich'}
+                                >
+                                    <i className={`${isInWishlist(product.id) ? 'fas' : 'far'} fa-heart`}></i>
                                 </button>
                             </div>
                         )}
@@ -273,12 +351,25 @@ const ProductDetailPage = () => {
                         {activeTab === 'reviews' && (
                             <div>
                                 {reviews.length > 0 ? (
-                                    reviews.map((review, idx) => <ReviewItem key={idx} review={review} />)
+                                    reviews.map((review, idx) => (
+                                        <ReviewItem
+                                            key={review.id || idx}
+                                            review={review}
+                                            currentUserId={user?.userId}
+                                            onDelete={handleDeleteReview}
+                                            onEdit={handleEditReview}
+                                        />
+                                    ))
                                 ) : (
                                     <p className="text-muted">Chua co danh gia nao. Hay la nguoi dau tien danh gia!</p>
                                 )}
                                 {isAuthenticated && (
-                                    <ReviewForm productId={product.id} onReviewSubmitted={refreshReviews} />
+                                    <ReviewForm
+                                        productId={product.id}
+                                        onReviewSubmitted={refreshReviews}
+                                        editingReview={editingReview}
+                                        onCancelEdit={() => setEditingReview(null)}
+                                    />
                                 )}
                             </div>
                         )}

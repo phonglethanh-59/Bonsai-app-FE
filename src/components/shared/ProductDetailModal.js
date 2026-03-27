@@ -6,13 +6,26 @@ import { useAuth } from '../../context/AuthContext';
 
 import { API_BASE, formatPrice } from '../../utils/config';
 
-const ReviewItem = ({ review }) => {
+const ReviewItem = ({ review, currentUserId, onDelete, onEdit }) => {
+    const isOwner = currentUserId && review.userId === currentUserId;
     const stars = Array.from({ length: 5 }, (_, i) => (
         <i key={i} className={`fas fa-star ${i < review.rating ? 'text-warning' : 'text-light'}`}></i>
     ));
     return (
         <div className="review-item mb-3">
-            <strong>{review.reviewerName}</strong>
+            <div className="d-flex justify-content-between align-items-center">
+                <strong>{review.reviewerName}</strong>
+                {isOwner && (
+                    <div className="d-flex gap-1">
+                        <button className="btn btn-sm btn-outline-primary py-0 px-1" onClick={() => onEdit(review)} title="Sua">
+                            <i className="fas fa-edit" style={{fontSize: '0.7rem'}}></i>
+                        </button>
+                        <button className="btn btn-sm btn-outline-danger py-0 px-1" onClick={() => onDelete(review.id)} title="Xoa">
+                            <i className="fas fa-trash" style={{fontSize: '0.7rem'}}></i>
+                        </button>
+                    </div>
+                )}
+            </div>
             <div className="d-flex justify-content-between">
                 <div className="review-stars">{stars}</div>
                 <small className="text-muted">{review.reviewDate}</small>
@@ -22,23 +35,41 @@ const ReviewItem = ({ review }) => {
     );
 };
 
-const ReviewForm = ({ productId, onReviewSubmitted }) => {
-    const [rating, setRating] = useState(5);
-    const [comment, setComment] = useState('');
+const ReviewForm = ({ productId, onReviewSubmitted, editingReview, onCancelEdit }) => {
+    const [rating, setRating] = useState(editingReview ? editingReview.rating : 5);
+    const [comment, setComment] = useState(editingReview ? editingReview.comment : '');
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState('');
+
+    React.useEffect(() => {
+        if (editingReview) {
+            setRating(editingReview.rating);
+            setComment(editingReview.comment);
+        } else {
+            setRating(5);
+            setComment('');
+        }
+    }, [editingReview]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
         setError('');
         try {
-            await axios.post(`${API_BASE}/api/reviews`,
-                { productId, rating, comment },
-                { withCredentials: true, headers: { 'Content-Type': 'application/json' } }
-            );
+            if (editingReview) {
+                await axios.put(`${API_BASE}/api/reviews/${editingReview.id}`,
+                    { rating, comment },
+                    { withCredentials: true, headers: { 'Content-Type': 'application/json' } }
+                );
+            } else {
+                await axios.post(`${API_BASE}/api/reviews`,
+                    { productId, rating, comment },
+                    { withCredentials: true, headers: { 'Content-Type': 'application/json' } }
+                );
+            }
             setComment('');
             setRating(5);
+            if (onCancelEdit) onCancelEdit();
             onReviewSubmitted();
         } catch (err) {
             setError(err.response?.data?.message || 'Khong the gui danh gia.');
@@ -49,7 +80,7 @@ const ReviewForm = ({ productId, onReviewSubmitted }) => {
 
     return (
         <form onSubmit={handleSubmit} className="mt-3 p-3 border rounded bg-light">
-            <h6 className="mb-2">Viet danh gia</h6>
+            <h6 className="mb-2">{editingReview ? 'Sua danh gia' : 'Viet danh gia'}</h6>
             {error && <div className="alert alert-danger py-1 small">{error}</div>}
             <div className="mb-2">
                 <label className="form-label small fw-bold">Sao</label>
@@ -67,9 +98,14 @@ const ReviewForm = ({ productId, onReviewSubmitted }) => {
                     placeholder="Nhan xet cua ban..."
                     value={comment} onChange={e => setComment(e.target.value)} required />
             </div>
-            <button type="submit" className="btn btn-sm btn-primary" disabled={submitting}>
-                {submitting ? 'Dang gui...' : 'Gui danh gia'}
-            </button>
+            <div className="d-flex gap-2">
+                <button type="submit" className="btn btn-sm btn-primary" disabled={submitting}>
+                    {submitting ? 'Dang gui...' : (editingReview ? 'Cap nhat' : 'Gui danh gia')}
+                </button>
+                {editingReview && (
+                    <button type="button" className="btn btn-sm btn-secondary" onClick={onCancelEdit}>Huy</button>
+                )}
+            </div>
         </form>
     );
 };
@@ -79,8 +115,9 @@ const ProductDetailModal = ({ show, handleClose, productId }) => {
     const [reviews, setReviews] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [editingReview, setEditingReview] = useState(null);
     const { addToCart } = useCart();
-    const { isAuthenticated } = useAuth();
+    const { isAuthenticated, user } = useAuth();
 
     const fetchDetails = async () => {
         setLoading(true);
@@ -107,13 +144,26 @@ const ProductDetailModal = ({ show, handleClose, productId }) => {
     }, [show, productId]);
 
     const handleReviewSubmitted = async () => {
-        // Refresh reviews sau khi submit
         try {
             const reviewsRes = await axios.get(`${API_BASE}/api/reviews/product/${productId}`);
             setReviews(reviewsRes.data?.content || []);
         } catch (err) {
             console.error("Loi khi tai lai review:", err);
         }
+    };
+
+    const handleDeleteReview = async (reviewId) => {
+        if (!window.confirm('Ban co chac muon xoa danh gia nay?')) return;
+        try {
+            await axios.delete(`${API_BASE}/api/reviews/${reviewId}`, { withCredentials: true });
+            handleReviewSubmitted();
+        } catch (err) {
+            alert(err.response?.data?.message || 'Khong the xoa danh gia.');
+        }
+    };
+
+    const handleEditReview = (review) => {
+        setEditingReview(review);
     };
 
     const getCoverImageUrl = (path) => {
@@ -170,12 +220,25 @@ const ProductDetailModal = ({ show, handleClose, productId }) => {
                             <div className="reviews-section mt-3">
                                 <h5><i className="fas fa-comments me-2"></i>Danh gia tu khach hang</h5>
                                 {reviews.length > 0 ? (
-                                    reviews.map((review, idx) => <ReviewItem key={idx} review={review} />)
+                                    reviews.map((review, idx) => (
+                                        <ReviewItem
+                                            key={review.id || idx}
+                                            review={review}
+                                            currentUserId={user?.userId}
+                                            onDelete={handleDeleteReview}
+                                            onEdit={handleEditReview}
+                                        />
+                                    ))
                                 ) : (
                                     <p className="text-muted small">Chua co danh gia nao cho san pham nay.</p>
                                 )}
                                 {isAuthenticated && (
-                                    <ReviewForm productId={productId} onReviewSubmitted={handleReviewSubmitted} />
+                                    <ReviewForm
+                                        productId={productId}
+                                        onReviewSubmitted={handleReviewSubmitted}
+                                        editingReview={editingReview}
+                                        onCancelEdit={() => setEditingReview(null)}
+                                    />
                                 )}
                             </div>
                         </Col>
