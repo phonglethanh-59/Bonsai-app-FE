@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { FiEdit, FiTrash2, FiPlus, FiX, FiRefreshCw } from 'react-icons/fi';
 import adminApi from '../../services/adminApi';
+import { useToast } from '../../components/shared/Toast';
 
 const CategoryModal = ({ isOpen, onClose, onSave, category }) => {
     const [form, setForm] = useState({ name: '', description: '' });
@@ -53,6 +54,7 @@ const AdminCategoriesPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingCategory, setEditingCategory] = useState(null);
+    const toast = useToast();
 
     const loadCategories = useCallback(async () => {
         setIsLoading(true);
@@ -72,26 +74,27 @@ const AdminCategoriesPage = () => {
         try {
             if (editingCategory) {
                 await adminApi.updateCategory(editingCategory.id, data);
-                alert('Cập nhật danh mục thành công!');
+                toast.success('Cập nhật danh mục thành công!');
             } else {
                 await adminApi.createCategory(data);
-                alert('Thêm danh mục thành công!');
+                toast.success('Thêm danh mục thành công!');
             }
             setIsModalOpen(false);
             loadCategories();
         } catch (err) {
-            alert(`Lỗi: ${err.message}`);
+            toast.error(`Lỗi: ${err.message}`);
         }
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm('Xóa danh mục sẽ ảnh hưởng đến các sản phẩm thuộc danh mục này. Bạn có chắc?')) {
+        const yes = await toast.confirm('Xóa danh mục sẽ ảnh hưởng đến các sản phẩm thuộc danh mục này. Bạn có chắc?');
+        if (yes) {
             try {
                 await adminApi.deleteCategory(id);
-                alert('Xóa danh mục thành công!');
+                toast.success('Xóa danh mục thành công!');
                 loadCategories();
             } catch (err) {
-                alert(`Lỗi: ${err.message}`);
+                toast.error(`Lỗi: ${err.message}`);
             }
         }
     };

@@ -5,7 +5,7 @@ const AuthFooter = () => {
         <footer>
             <div className="container">
                 <div className="footer-mini">
-                    <p className="mb-0">&copy;  2025 - Hệ thống Thư viện Trực tuyến | Đồ án Java Web - VTI</p>
+                    <p className="mb-0">&copy; 2025 - Bonsai Shop | Đồ án Java Web - VTI</p>
                 </div>
             </div>
         </footer>

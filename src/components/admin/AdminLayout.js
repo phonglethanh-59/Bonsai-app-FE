@@ -1,5 +1,3 @@
-// src/components/admin/AdminLayout.js
-
 import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
@@ -13,55 +11,44 @@ const AdminLayout = () => {
 
     return (
         <AdminWrapper>
-            <div className="admin-flex admin-h-screen admin-bg-gray-100">
+            <div style={{ display: 'flex', height: '100vh', background: '#f8fafc' }}>
                 {/* Mobile Overlay */}
                 {isMobileMenuOpen && (
-                    <div 
-                        className="fixed inset-0 bg-black bg-opacity-50 z-20 admin-lg:hidden"
+                    <div
+                        style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.3)', zIndex: 20 }}
                         onClick={() => setIsMobileMenuOpen(false)}
                     />
                 )}
-                
-                {/* Sidebar */}
-                <div className={`${isMobileMenuOpen ? 'admin-translate-x-0' : '-translate-x-full'} admin-lg:translate-x-0 transition-transform duration-300 ease-in-out`}>
-                    <Sidebar role={user?.role} />
-                </div>
-                
-                {/* Main Content */}
-                <div className="admin-flex-1 admin-flex admin-flex-col admin-overflow-hidden">
-                    {/* Top Header */}
-                    <header className="admin-bg-white admin-shadow-sm admin-border admin-border-gray-200 admin-px-4 admin-lg:px-6 admin-py-4">
-                        <div className="admin-flex admin-items-center admin-justify-between">
-                            {/* === PHẦN ĐÃ SỬA LỖI === */}
-                            <div className="admin-flex admin-items-center">
-                                {/* Mobile Menu Button */}
-                               
-                                <div>
-                                    <h1 className="admin-text-xl admin-lg:text-2xl admin-font-bold admin-text-gray-900">
-                                        Xin chào {user?.userDetail?.fullName || user?.username}!
-                                    </h1>
-                                    <p className="admin-text-sm admin-text-gray-600 admin-mt-1 admin-hidden admin-sm:block">
-                                        Chào mừng bạn đến với hệ thống quản lý thư viện
-                                    </p>
-                                </div>
-                            </div>
-                            {/* ======================= */}
 
-                            <div className="admin-flex admin-items-center admin-space-x-4">
-                               
-                                
-                                {/* User Profile */}
-                                <div className="admin-flex admin-items-center admin-space-x-3">
-                                    <div className="admin-w-8 admin-h-8 admin-bg-blue-500 admin-rounded-full admin-flex admin-items-center admin-justify-center">
-                                        <span className="admin-text-white admin-text-sm admin-font-medium">
+                {/* Sidebar */}
+                <Sidebar role={user?.role} />
+
+                {/* Main Content */}
+                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', marginLeft: '260px' }}>
+                    {/* Top Header */}
+                    <header style={{ background: 'white', borderBottom: '1px solid #e5e7eb', padding: '1rem 1.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <div>
+                                <h1 style={{ fontSize: '1.25rem', fontWeight: 700, color: '#111827', margin: 0 }}>
+                                    Xin chào, {user?.userDetail?.fullName || user?.username}!
+                                </h1>
+                                <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: '0.25rem 0 0' }}>
+                                    Chào mừng bạn đến với hệ thống quản lý Bonsai Shop
+                                </p>
+                            </div>
+
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                    <div style={{ width: 36, height: 36, background: '#10b981', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <span style={{ color: 'white', fontSize: '0.875rem', fontWeight: 600 }}>
                                             {(user?.userDetail?.fullName || user?.username || 'U').charAt(0).toUpperCase()}
                                         </span>
                                     </div>
-                                    <div className="admin-hidden admin-md:block">
-                                        <p className="admin-text-sm admin-font-medium admin-text-gray-900">
+                                    <div>
+                                        <p style={{ fontSize: '0.875rem', fontWeight: 500, color: '#111827', margin: 0 }}>
                                             {user?.userDetail?.fullName || user?.username}
                                         </p>
-                                        <p className="admin-text-xs admin-text-gray-500 capitalize">
+                                        <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: 0, textTransform: 'capitalize' }}>
                                             {user?.role?.toLowerCase()}
                                         </p>
                                     </div>
@@ -71,21 +58,19 @@ const AdminLayout = () => {
                     </header>
 
                     {/* Main Content Area */}
-                    <main className="admin-flex-1 admin-overflow-y-auto admin-bg-gray-50">
-                        <div className="admin-p-6">
-                            <Outlet />
-                        </div>
+                    <main style={{ flex: 1, overflowY: 'auto', padding: '1.5rem' }}>
+                        <Outlet />
                     </main>
 
                     {/* Footer */}
-                    <footer className="admin-bg-white admin-border admin-border-gray-200 admin-px-6 admin-py-4">
-                        <div className="admin-flex admin-items-center admin-justify-between">
-                            <div className="admin-text-sm admin-text-gray-500">
-                                Bản quyền &copy; Thư viện VTI {new Date().getFullYear()}
-                            </div>
-                            <div className="admin-text-sm admin-text-gray-500">
-                                Hệ thống quản lý thư viện thông minh
-                            </div>
+                    <footer style={{ background: 'white', borderTop: '1px solid #e5e7eb', padding: '0.75rem 1.5rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                            <span style={{ fontSize: '0.8rem', color: '#9ca3af' }}>
+                                Bản quyền &copy; Bonsai Shop {new Date().getFullYear()}
+                            </span>
+                            <span style={{ fontSize: '0.8rem', color: '#9ca3af' }}>
+                                Hệ thống quản lý cửa hàng bonsai
+                            </span>
                         </div>
                     </footer>
                 </div>

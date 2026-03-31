@@ -46,24 +46,24 @@ const Navbar = () => {
                     </button>
                     <div className="collapse navbar-collapse" id="navbarNav">
                         <ul className="navbar-nav mx-auto">
-                            <li className="nav-item"><NavLink className="nav-link" to="/" end>Trang chu</NavLink></li>
-                            <li className="nav-item"><NavLink className="nav-link" to="/categories">San pham</NavLink></li>
-                            <li className="nav-item"><NavLink className="nav-link" to="/about">Gioi thieu</NavLink></li>
-                            <li className="nav-item"><NavLink className="nav-link" to="/contact">Lien he</NavLink></li>
+                            <li className="nav-item"><NavLink className="nav-link" to="/" end>Trang chủ</NavLink></li>
+                            <li className="nav-item"><NavLink className="nav-link" to="/categories">Sản phẩm</NavLink></li>
+                            <li className="nav-item"><NavLink className="nav-link" to="/about">Giới thiệu</NavLink></li>
+                            <li className="nav-item"><NavLink className="nav-link" to="/contact">Liên hệ</NavLink></li>
                         </ul>
                         <div className="d-flex align-items-center">
                             {!isAuthenticated ? (
                                 <div className="ms-auto">
                                     {location.pathname !== '/login' && (
-                                        <Link to="/login" className="btn nav-btn btn-login me-2">Dang nhap</Link>
+                                        <Link to="/login" className="btn nav-btn btn-login me-2">Đăng nhập</Link>
                                     )}
                                     {location.pathname !== '/register' && (
-                                        <Link to="/register" className="btn nav-btn btn-register">Dang ky</Link>
+                                        <Link to="/register" className="btn nav-btn btn-register">Đăng ký</Link>
                                     )}
                                 </div>
                             ) : (
                                 <div className="d-flex align-items-center ms-auto">
-                                    <span className="me-2 navbar-text">Chao, {user?.userDetail?.fullName || user?.username}!</span>
+                                    <span className="me-2 navbar-text">Chào, {user?.userDetail?.fullName || user?.username}!</span>
                                     <div className="dropdown">
                                         <a href="/#" className="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                                             {user?.userDetail?.avatar ? (
@@ -81,17 +81,17 @@ const Navbar = () => {
                                         <ul className="dropdown-menu dropdown-menu-end text-small shadow">
                                             <li>
                                                 <a href="/#" className="dropdown-item" onClick={(e) => { e.preventDefault(); setShowProfileModal(true); }}>
-                                                    <i className="fas fa-user-edit me-2"></i>Thong tin tai khoan
+                                                    <i className="fas fa-user-edit me-2"></i>Thông tin tài khoản
                                                 </a>
                                             </li>
                                             <li>
                                                 <a href="/#" className="dropdown-item" onClick={(e) => { e.preventDefault(); navigate('/orders'); }}>
-                                                    <i className="fas fa-shopping-bag me-2"></i>Don hang cua toi
+                                                    <i className="fas fa-shopping-bag me-2"></i>Đơn hàng của tôi
                                                 </a>
                                             </li>
                                             <li>
                                                 <a href="/#" className="dropdown-item d-flex align-items-center" onClick={(e) => { e.preventDefault(); navigate('/wishlist'); }}>
-                                                    <i className="fas fa-heart me-2 text-danger"></i>Yeu thich
+                                                    <i className="fas fa-heart me-2 text-danger"></i>Yêu thích
                                                     {getWishlistCount() > 0 && (
                                                         <span className="badge bg-danger rounded-pill ms-auto">{getWishlistCount()}</span>
                                                     )}
@@ -99,7 +99,7 @@ const Navbar = () => {
                                             </li>
                                             <li>
                                                 <a href="/#" className="dropdown-item d-flex align-items-center" onClick={(e) => { e.preventDefault(); navigate('/cart'); }}>
-                                                    <i className="fas fa-shopping-cart me-2 text-success"></i>Gio hang
+                                                    <i className="fas fa-shopping-cart me-2 text-success"></i>Giỏ hàng
                                                     {getCartCount() > 0 && (
                                                         <span className="badge bg-success rounded-pill ms-auto">{getCartCount()}</span>
                                                     )}
@@ -108,14 +108,14 @@ const Navbar = () => {
                                             {user?.role === 'ADMIN' && (
                                                 <li>
                                                     <Link to="/admin/dashboard" className="dropdown-item">
-                                                        <i className="fas fa-cogs me-2"></i>Quan tri
+                                                        <i className="fas fa-cogs me-2"></i>Quản trị
                                                     </Link>
                                                 </li>
                                             )}
                                             <li><hr className="dropdown-divider" /></li>
                                             <li>
                                                 <a href="/#" className="dropdown-item" onClick={handleLogout}>
-                                                    <i className="fas fa-sign-out-alt me-2"></i>Dang xuat
+                                                    <i className="fas fa-sign-out-alt me-2"></i>Đăng xuất
                                                 </a>
                                             </li>
                                         </ul>

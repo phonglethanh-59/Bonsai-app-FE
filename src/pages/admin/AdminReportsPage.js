@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { FiDownload, FiRefreshCw, FiTrendingUp, FiShoppingCart, FiCheckCircle, FiXCircle, FiClock } from 'react-icons/fi';
 import adminApi from '../../services/adminApi';
 import { formatPrice } from '../../utils/config';
+import { useToast } from '../../components/shared/Toast';
 
 const AdminReportsPage = () => {
     const today = new Date();
@@ -12,10 +13,11 @@ const AdminReportsPage = () => {
     const [report, setReport] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [exporting, setExporting] = useState(false);
+    const toast = useToast();
 
     const loadReport = useCallback(async () => {
         if (!fromDate || !toDate) {
-            alert('Vui lòng chọn khoảng thời gian');
+            toast.warning('Vui lòng chọn khoảng thời gian');
             return;
         }
         setIsLoading(true);
@@ -23,7 +25,7 @@ const AdminReportsPage = () => {
             const data = await adminApi.getRevenueReport({ fromDate, toDate });
             setReport(data);
         } catch (err) {
-            alert('Lỗi tải báo cáo: ' + err.message);
+            toast.error('Lỗi tải báo cáo: ' + err.message);
         } finally {
             setIsLoading(false);
         }
@@ -42,7 +44,7 @@ const AdminReportsPage = () => {
 
     const handleExport = async (type) => {
         if (!fromDate || !toDate) {
-            alert('Vui lòng chọn khoảng thời gian');
+            toast.warning('Vui lòng chọn khoảng thời gian');
             return;
         }
         setExporting(true);
@@ -56,7 +58,7 @@ const AdminReportsPage = () => {
                 downloadBlob(blob, `doanh-thu_${fromDate}_${toDate}.pdf`);
             }
         } catch (err) {
-            alert('Lỗi xuất file: ' + err.message);
+            toast.error('Lỗi xuất file: ' + err.message);
         } finally {
             setExporting(false);
         }

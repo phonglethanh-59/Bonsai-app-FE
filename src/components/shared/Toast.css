@@ -1,0 +1,194 @@
+/* ========== TOAST NOTIFICATIONS ========== */
+.toast-container-custom {
+    position: fixed;
+    top: 1.25rem;
+    right: 1.25rem;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    max-width: 400px;
+    pointer-events: none;
+}
+
+.toast-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    border-radius: 0.75rem;
+    background: white;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    border-left: 4px solid;
+    pointer-events: all;
+    min-width: 300px;
+    backdrop-filter: blur(8px);
+}
+
+/* Toast types */
+.toast-success {
+    border-left-color: #10b981;
+}
+.toast-success .toast-icon { color: #10b981; }
+
+.toast-error {
+    border-left-color: #ef4444;
+}
+.toast-error .toast-icon { color: #ef4444; }
+
+.toast-warning {
+    border-left-color: #f59e0b;
+}
+.toast-warning .toast-icon { color: #f59e0b; }
+
+.toast-info {
+    border-left-color: #3b82f6;
+}
+.toast-info .toast-icon { color: #3b82f6; }
+
+.toast-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+}
+
+.toast-message {
+    flex: 1;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #1f2937;
+    line-height: 1.4;
+}
+
+.toast-close {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #9ca3af;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+    transition: color 0.15s, background 0.15s;
+}
+.toast-close:hover {
+    color: #374151;
+    background: #f3f4f6;
+}
+
+/* Animations */
+.toast-enter {
+    animation: toastSlideIn 0.3s ease-out forwards;
+}
+
+.toast-exit {
+    animation: toastSlideOut 0.3s ease-in forwards;
+}
+
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes toastSlideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+}
+
+/* ========== CONFIRM DIALOG ========== */
+.confirm-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    z-index: 99998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: confirmFadeIn 0.2s ease-out;
+}
+
+.confirm-modal {
+    background: white;
+    border-radius: 1rem;
+    padding: 2rem;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: confirmScaleIn 0.2s ease-out;
+}
+
+.confirm-icon {
+    margin-bottom: 1rem;
+}
+
+.confirm-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 0.5rem 0;
+}
+
+.confirm-message {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin: 0 0 1.5rem 0;
+    line-height: 1.5;
+}
+
+.confirm-buttons {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+}
+
+.confirm-btn {
+    padding: 0.625rem 1.5rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.15s;
+    min-width: 100px;
+}
+
+.confirm-btn-cancel {
+    background: #f3f4f6;
+    color: #374151;
+}
+.confirm-btn-cancel:hover {
+    background: #e5e7eb;
+}
+
+.confirm-btn-ok {
+    background: #ef4444;
+    color: white;
+}
+.confirm-btn-ok:hover {
+    background: #dc2626;
+}
+
+@keyframes confirmFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes confirmScaleIn {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+}

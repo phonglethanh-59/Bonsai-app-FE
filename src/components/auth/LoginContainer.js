@@ -11,7 +11,7 @@ const LoginContainer = ({ loginError }) => {
                 <div className="col-md-7 col-lg-5">
                     <div className="card">
                         <div className="card-header">
-                            <h3>Dang Nhap Bonsai Shop</h3>
+                            <h3>Đăng Nhập Bonsai Shop</h3>
                         </div>
                         <div className="card-body">
                             {loginError && <div className="alert alert-danger p-2 small">Tên đăng nhập hoặc mật khẩu không chính xác.</div>}

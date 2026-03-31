@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import { WishlistProvider } from './context/WishlistContext';
+import { ToastProvider } from './components/shared/Toast';
 import ErrorBoundary from './components/shared/ErrorBoundary';
 
 // Trang chính - load ngay
@@ -28,6 +29,7 @@ const AdminCategoriesPage = lazy(() => import('./pages/admin/AdminCategoriesPage
 const AdminOrdersPage = lazy(() => import('./pages/admin/AdminOrdersPage'));
 const AdminReviewsPage = lazy(() => import('./pages/admin/AdminReviewsPage'));
 const AdminReportsPage = lazy(() => import('./pages/admin/AdminReportsPage'));
+const AdminUsersPage = lazy(() => import('./pages/admin/AdminUsersPage'));
 
 const LoadingFallback = () => (
     <div className="text-center p-5">
@@ -51,6 +53,7 @@ const ProtectedRoute = ({ children, roles }) => {
 function App() {
   return (
     <ErrorBoundary>
+      <ToastProvider>
       <AuthProvider>
         <CartProvider>
           <WishlistProvider>
@@ -71,6 +74,7 @@ function App() {
                   }
                 >
                   <Route path="dashboard" element={<AdminDashboardPage />} />
+                  <Route path="users" element={<AdminUsersPage />} />
                   <Route path="products" element={<AdminProductsPage />} />
                   <Route path="categories" element={<AdminCategoriesPage />} />
                   <Route path="orders" element={<AdminOrdersPage />} />
@@ -111,6 +115,7 @@ function App() {
           </WishlistProvider>
         </CartProvider>
       </AuthProvider>
+      </ToastProvider>
     </ErrorBoundary>
   );
 }

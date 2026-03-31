@@ -113,6 +113,41 @@ const adminApi = {
         });
     },
 
+    removeCoverImage: (productId) => {
+        return apiRequest(`${API_BASE_URL}/products/${productId}/cover-image`, {
+            method: 'DELETE',
+        });
+    },
+
+    getProductImages: (productId) => {
+        return apiRequest(`${API_BASE_URL}/products/${productId}/images`);
+    },
+
+    uploadProductImages: (productId, files) => {
+        const formData = new FormData();
+        files.forEach(file => formData.append('files', file));
+        return fetch(`${API_BASE_URL}/products/${productId}/images`, {
+            method: 'POST',
+            body: formData,
+            credentials: 'include',
+        }).then(res => {
+            if (!res.ok) return res.json().then(err => { throw new Error(err.message || 'Upload failed'); });
+            return res.json();
+        });
+    },
+
+    deleteProductImage: (productId, imageId) => {
+        return apiRequest(`${API_BASE_URL}/products/${productId}/images/${imageId}`, {
+            method: 'DELETE',
+        });
+    },
+
+    setCoverImage: (productId, imageId) => {
+        return apiRequest(`${API_BASE_URL}/products/${productId}/images/${imageId}/set-cover`, {
+            method: 'PUT',
+        });
+    },
+
     // ===================== CATEGORY MANAGEMENT =====================
     getCategories: () => {
         return apiRequest(`${API_BASE}/api/categories`);

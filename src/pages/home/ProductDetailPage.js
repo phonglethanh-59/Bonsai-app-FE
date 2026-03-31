@@ -5,6 +5,7 @@ import { API_BASE, formatPrice } from '../../utils/config';
 import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useWishlist } from '../../context/WishlistContext';
+import { useToast } from '../../components/shared/Toast';
 
 const ReviewItem = ({ review, currentUserId, onDelete, onEdit }) => {
     const isOwner = currentUserId && review.userId === currentUserId;
@@ -19,10 +20,10 @@ const ReviewItem = ({ review, currentUserId, onDelete, onEdit }) => {
                     <small className="text-muted">{review.reviewDate}</small>
                     {isOwner && (
                         <div className="d-flex gap-1">
-                            <button className="btn btn-sm btn-outline-primary py-0 px-1" onClick={() => onEdit(review)} title="Sua">
+                            <button className="btn btn-sm btn-outline-primary py-0 px-1" onClick={() => onEdit(review)} title="Sửa">
                                 <i className="fas fa-edit" style={{fontSize: '0.75rem'}}></i>
                             </button>
-                            <button className="btn btn-sm btn-outline-danger py-0 px-1" onClick={() => onDelete(review.id)} title="Xoa">
+                            <button className="btn btn-sm btn-outline-danger py-0 px-1" onClick={() => onDelete(review.id)} title="Xóa">
                                 <i className="fas fa-trash" style={{fontSize: '0.75rem'}}></i>
                             </button>
                         </div>
@@ -72,7 +73,7 @@ const ReviewForm = ({ productId, onReviewSubmitted, editingReview, onCancelEdit 
             if (onCancelEdit) onCancelEdit();
             onReviewSubmitted();
         } catch (err) {
-            setError(err.response?.data?.message || 'Khong the gui danh gia.');
+            setError(err.response?.data?.message || 'Không thể gửi đánh giá.');
         } finally {
             setSubmitting(false);
         }
@@ -80,10 +81,10 @@ const ReviewForm = ({ productId, onReviewSubmitted, editingReview, onCancelEdit 
 
     return (
         <form onSubmit={handleSubmit} className="mt-4 p-3 border rounded bg-light">
-            <h6 className="mb-3">{editingReview ? 'Sua danh gia' : 'Viet danh gia cua ban'}</h6>
+            <h6 className="mb-3">{editingReview ? 'Sửa đánh giá' : 'Viết đánh giá của bạn'}</h6>
             {error && <div className="alert alert-danger py-1 small">{error}</div>}
             <div className="mb-3">
-                <label className="form-label small fw-bold">Danh gia sao</label>
+                <label className="form-label small fw-bold">Đánh giá sao</label>
                 <div>
                     {[1, 2, 3, 4, 5].map(star => (
                         <i key={star}
@@ -95,16 +96,16 @@ const ReviewForm = ({ productId, onReviewSubmitted, editingReview, onCancelEdit 
             </div>
             <div className="mb-3">
                 <textarea className="form-control" rows="3"
-                    placeholder="Chia se trai nghiem cua ban ve san pham nay..."
+                    placeholder="Chia sẻ trải nghiệm của bạn về sản phẩm này..."
                     value={comment} onChange={e => setComment(e.target.value)} required />
             </div>
             <div className="d-flex gap-2">
                 <button type="submit" className="btn btn-primary" disabled={submitting}>
-                    {submitting ? 'Dang gui...' : (editingReview ? 'Cap nhat' : 'Gui danh gia')}
+                    {submitting ? 'Đang gửi...' : (editingReview ? 'Cập nhật' : 'Gửi đánh giá')}
                 </button>
                 {editingReview && (
                     <button type="button" className="btn btn-secondary" onClick={onCancelEdit}>
-                        Huy
+                        Hủy
                     </button>
                 )}
             </div>
@@ -122,26 +123,28 @@ const ProductDetailPage = () => {
     const [activeTab, setActiveTab] = useState('intro');
     const [quantity, setQuantity] = useState(1);
     const [editingReview, setEditingReview] = useState(null);
+    const [selectedImage, setSelectedImage] = useState(null);
     const { addToCart } = useCart();
     const { isAuthenticated, user } = useAuth();
     const { isInWishlist, toggleWishlist } = useWishlist();
+    const toast = useToast();
 
     const handleToggleWishlist = async () => {
         if (!isAuthenticated) {
-            alert('Vui long dang nhap de su dung danh sach yeu thich.');
+            toast.warning('Vui lòng đăng nhập để sử dụng danh sách yêu thích.');
             return;
         }
         try {
             await toggleWishlist(product.id);
         } catch (err) {
-            alert(err.message);
+            toast.error(err.message);
         }
     };
 
     const careLevelLabels = {
-        EASY: 'De cham soc',
-        MEDIUM: 'Trung binh',
-        HARD: 'Kho'
+        EASY: 'Dễ chăm sóc',
+        MEDIUM: 'Trung bình',
+        HARD: 'Khó'
     };
 
     const getCoverImageUrl = (path) => {
@@ -163,7 +166,7 @@ const ProductDetailPage = () => {
                 setReviews(reviewsRes.data?.content || []);
                 setRelatedProducts(relatedRes.data || []);
             } catch (err) {
-                console.error('Loi:', err);
+                console.error('Lỗi:', err);
             } finally {
                 setLoading(false);
             }
@@ -175,9 +178,9 @@ const ProductDetailPage = () => {
     const handleAddToCart = async () => {
         try {
             await addToCart(product.id, quantity);
-            alert('Da them vao gio hang!');
+            toast.success('Đã thêm vào giỏ hàng!');
         } catch (err) {
-            alert(err.message);
+            toast.error(err.message);
         }
     };
 
@@ -186,17 +189,19 @@ const ProductDetailPage = () => {
             const res = await axios.get(`${API_BASE}/api/reviews/product/${id}`);
             setReviews(res.data?.content || []);
         } catch (err) {
-            console.error('Loi tai review:', err);
+            console.error('Lỗi tải review:', err);
         }
     };
 
     const handleDeleteReview = async (reviewId) => {
-        if (!window.confirm('Ban co chac muon xoa danh gia nay?')) return;
+        const yes = await toast.confirm('Bạn có chắc muốn xóa đánh giá này?');
+        if (!yes) return;
         try {
             await axios.delete(`${API_BASE}/api/reviews/${reviewId}`, { withCredentials: true });
             refreshReviews();
+            toast.success('Đã xóa đánh giá.');
         } catch (err) {
-            alert(err.response?.data?.message || 'Khong the xoa danh gia.');
+            toast.error(err.response?.data?.message || 'Không thể xóa đánh giá.');
         }
     };
 
@@ -208,7 +213,7 @@ const ProductDetailPage = () => {
         return (
             <div className="container py-5 text-center" style={{ marginTop: '80px' }}>
                 <div className="spinner-border text-success" role="status"></div>
-                <p className="mt-2 text-muted">Dang tai san pham...</p>
+                <p className="mt-2 text-muted">Đang tải sản phẩm...</p>
             </div>
         );
     }
@@ -216,8 +221,8 @@ const ProductDetailPage = () => {
     if (!product) {
         return (
             <div className="container py-5 text-center" style={{ marginTop: '80px' }}>
-                <h4>Khong tim thay san pham</h4>
-                <Link to="/categories" className="btn btn-primary mt-3">Quay lai cua hang</Link>
+                <h4>Không tìm thấy sản phẩm</h4>
+                <Link to="/categories" className="btn btn-primary mt-3">Quay lại cửa hàng</Link>
             </div>
         );
     }
@@ -229,8 +234,8 @@ const ProductDetailPage = () => {
                 <div className="container">
                     <nav aria-label="breadcrumb">
                         <ol className="breadcrumb mb-0 small">
-                            <li className="breadcrumb-item"><Link to="/">Trang chu</Link></li>
-                            <li className="breadcrumb-item"><Link to="/categories">San pham</Link></li>
+                            <li className="breadcrumb-item"><Link to="/">Trang chủ</Link></li>
+                            <li className="breadcrumb-item"><Link to="/categories">Sản phẩm</Link></li>
                             <li className="breadcrumb-item active">{product.name}</li>
                         </ol>
                     </nav>
@@ -240,13 +245,48 @@ const ProductDetailPage = () => {
             {/* Product Info */}
             <div className="container py-4">
                 <div className="row">
-                    <div className="col-md-5 text-center">
-                        <img
-                            src={getCoverImageUrl(product.coverImage)}
-                            alt={product.name}
-                            className="img-fluid rounded shadow"
-                            style={{ maxHeight: '450px', objectFit: 'cover' }}
-                        />
+                    <div className="col-md-5">
+                        {/* Main Image */}
+                        <div style={{ borderRadius: '0.75rem', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)', marginBottom: '0.75rem' }}>
+                            <img
+                                src={getCoverImageUrl(selectedImage || product.coverImage)}
+                                alt={product.name}
+                                className="img-fluid"
+                                style={{ width: '100%', maxHeight: '450px', objectFit: 'cover', display: 'block' }}
+                            />
+                        </div>
+                        {/* Thumbnail Gallery */}
+                        {(() => {
+                            // Gộp coverImage + images thành 1 danh sách không trùng lặp
+                            const allImages = [];
+                            if (product.coverImage) allImages.push(product.coverImage);
+                            if (product.images) {
+                                product.images.forEach(url => {
+                                    if (!allImages.includes(url)) allImages.push(url);
+                                });
+                            }
+                            if (allImages.length <= 1) return null;
+
+                            const current = selectedImage || product.coverImage;
+                            return (
+                                <div style={{ display: 'flex', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.25rem' }}>
+                                    {allImages.map((imgUrl, idx) => (
+                                        <img
+                                            key={idx}
+                                            src={getCoverImageUrl(imgUrl)}
+                                            alt={`${product.name} ${idx + 1}`}
+                                            onClick={() => setSelectedImage(imgUrl)}
+                                            style={{
+                                                width: 64, height: 64, objectFit: 'cover', borderRadius: '0.5rem', cursor: 'pointer',
+                                                border: current === imgUrl ? '2px solid #10b981' : '2px solid #e5e7eb',
+                                                opacity: current === imgUrl ? 1 : 0.7,
+                                                transition: 'all 0.15s', flexShrink: 0
+                                            }}
+                                        />
+                                    ))}
+                                </div>
+                            );
+                        })()}
                     </div>
                     <div className="col-md-7">
                         <h2 className="fw-bold">{product.name}</h2>
@@ -256,18 +296,18 @@ const ProductDetailPage = () => {
                                     <i key={i} className={`fas fa-star ${i < Math.round(product.averageRating || 0) ? '' : 'text-muted'}`}></i>
                                 ))}
                             </div>
-                            <span className="text-muted">({product.reviewCount || 0} danh gia)</span>
+                            <span className="text-muted">({product.reviewCount || 0} đánh giá)</span>
                         </div>
                         <h3 className="text-success fw-bold mb-3">{formatPrice(product.price)}</h3>
                         <div className="row mb-3">
-                            <div className="col-6 mb-2"><strong>Danh muc:</strong> {product.category?.name || 'N/A'}</div>
-                            <div className="col-6 mb-2"><strong>Xuat xu:</strong> {product.origin || 'N/A'}</div>
-                            <div className="col-6 mb-2"><strong>Nha cung cap:</strong> {product.supplier || 'N/A'}</div>
-                            <div className="col-6 mb-2"><strong>Muc do:</strong> {careLevelLabels[product.careLevel] || 'N/A'}</div>
+                            <div className="col-6 mb-2"><strong>Danh mục:</strong> {product.category?.name || 'N/A'}</div>
+                            <div className="col-6 mb-2"><strong>Xuất xứ:</strong> {product.origin || 'N/A'}</div>
+                            <div className="col-6 mb-2"><strong>Nhà cung cấp:</strong> {product.supplier || 'N/A'}</div>
+                            <div className="col-6 mb-2"><strong>Mức độ:</strong> {careLevelLabels[product.careLevel] || 'N/A'}</div>
                         </div>
                         <div className="mb-3">
                             <span className={`badge ${product.stockQuantity > 0 ? 'bg-success' : 'bg-danger'} fs-6`}>
-                                {product.stockQuantity > 0 ? `Con ${product.stockQuantity} cay` : 'Het hang'}
+                                {product.stockQuantity > 0 ? `Còn ${product.stockQuantity} cây` : 'Hết hàng'}
                             </span>
                         </div>
 
@@ -281,14 +321,14 @@ const ProductDetailPage = () => {
                                             <button className="btn btn-outline-secondary" onClick={() => setQuantity(Math.min(product.stockQuantity, quantity + 1))}>+</button>
                                         </div>
                                         <button className="btn btn-success btn-lg" onClick={handleAddToCart}>
-                                            <i className="fas fa-cart-plus me-2"></i>Them vao gio
+                                            <i className="fas fa-cart-plus me-2"></i>Thêm vào giỏ
                                         </button>
                                     </>
                                 )}
                                 <button
                                     className={`btn btn-lg ${isInWishlist(product.id) ? 'btn-danger' : 'btn-outline-danger'}`}
                                     onClick={handleToggleWishlist}
-                                    title={isInWishlist(product.id) ? 'Xoa khoi yeu thich' : 'Them vao yeu thich'}
+                                    title={isInWishlist(product.id) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích'}
                                 >
                                     <i className={`${isInWishlist(product.id) ? 'fas' : 'far'} fa-heart`}></i>
                                 </button>
@@ -303,19 +343,19 @@ const ProductDetailPage = () => {
                         <li className="nav-item">
                             <button className={`nav-link ${activeTab === 'intro' ? 'active' : ''}`}
                                 onClick={() => setActiveTab('intro')}>
-                                <i className="fas fa-info-circle me-1"></i>Gioi thieu
+                                <i className="fas fa-info-circle me-1"></i>Giới thiệu
                             </button>
                         </li>
                         <li className="nav-item">
                             <button className={`nav-link ${activeTab === 'care' ? 'active' : ''}`}
                                 onClick={() => setActiveTab('care')}>
-                                <i className="fas fa-seedling me-1"></i>Huong dan cham soc
+                                <i className="fas fa-seedling me-1"></i>Hướng dẫn chăm sóc
                             </button>
                         </li>
                         <li className="nav-item">
                             <button className={`nav-link ${activeTab === 'reviews' ? 'active' : ''}`}
                                 onClick={() => setActiveTab('reviews')}>
-                                <i className="fas fa-star me-1"></i>Danh gia ({reviews.length})
+                                <i className="fas fa-star me-1"></i>Đánh giá ({reviews.length})
                             </button>
                         </li>
                     </ul>
@@ -323,16 +363,16 @@ const ProductDetailPage = () => {
                     <div className="tab-content p-4 border border-top-0 rounded-bottom">
                         {activeTab === 'intro' && (
                             <div>
-                                <p style={{ whiteSpace: 'pre-wrap' }}>{product.description || 'Chua co mo ta cho san pham nay.'}</p>
+                                <p style={{ whiteSpace: 'pre-wrap' }}>{product.description || 'Chưa có mô tả cho sản phẩm này.'}</p>
                                 <hr />
-                                <h6 className="fw-bold mb-3">Thong so chi tiet</h6>
+                                <h6 className="fw-bold mb-3">Thông số chi tiết</h6>
                                 <table className="table table-bordered">
                                     <tbody>
                                         <tr><td className="fw-bold" style={{width: '30%'}}>SKU</td><td>{product.sku}</td></tr>
-                                        <tr><td className="fw-bold">Tuoi cay</td><td>{product.age ? `${product.age} nam` : 'N/A'}</td></tr>
-                                        <tr><td className="fw-bold">Chieu cao</td><td>{product.height ? `${product.height} cm` : 'N/A'}</td></tr>
-                                        <tr><td className="fw-bold">Loai chau</td><td>{product.potType || 'N/A'}</td></tr>
-                                        <tr><td className="fw-bold">Muc do cham soc</td><td>{careLevelLabels[product.careLevel] || 'N/A'}</td></tr>
+                                        <tr><td className="fw-bold">Tuổi cây</td><td>{product.age ? `${product.age} năm` : 'N/A'}</td></tr>
+                                        <tr><td className="fw-bold">Chiều cao</td><td>{product.height ? `${product.height} cm` : 'N/A'}</td></tr>
+                                        <tr><td className="fw-bold">Loại chậu</td><td>{product.potType || 'N/A'}</td></tr>
+                                        <tr><td className="fw-bold">Mức độ chăm sóc</td><td>{careLevelLabels[product.careLevel] || 'N/A'}</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -343,7 +383,7 @@ const ProductDetailPage = () => {
                                 {product.careGuide ? (
                                     <div style={{ whiteSpace: 'pre-wrap' }}>{product.careGuide}</div>
                                 ) : (
-                                    <p className="text-muted">Chua co huong dan cham soc cho san pham nay.</p>
+                                    <p className="text-muted">Chưa có hướng dẫn chăm sóc cho sản phẩm này.</p>
                                 )}
                             </div>
                         )}
@@ -361,7 +401,7 @@ const ProductDetailPage = () => {
                                         />
                                     ))
                                 ) : (
-                                    <p className="text-muted">Chua co danh gia nao. Hay la nguoi dau tien danh gia!</p>
+                                    <p className="text-muted">Chưa có đánh giá nào. Hãy là người đầu tiên đánh giá!</p>
                                 )}
                                 {isAuthenticated && (
                                     <ReviewForm
@@ -379,7 +419,7 @@ const ProductDetailPage = () => {
                 {/* Related Products */}
                 {relatedProducts.length > 0 && (
                     <div className="mt-5">
-                        <h4 className="fw-bold mb-4"><i className="fas fa-leaf me-2 text-success"></i>San pham lien quan</h4>
+                        <h4 className="fw-bold mb-4"><i className="fas fa-leaf me-2 text-success"></i>Sản phẩm liên quan</h4>
                         <div className="row">
                             {relatedProducts.map(p => (
                                 <div key={p.id} className="col-6 col-md-4 col-lg-2 mb-3">

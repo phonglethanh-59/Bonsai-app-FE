@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { API_BASE } from '../../utils/config';
 import {
     FiHome, FiUsers, FiPackage, FiGrid, FiShoppingCart,
-    FiSettings, FiLogOut, FiChevronLeft, FiChevronRight, FiMessageSquare, FiBarChart2
+    FiLogOut, FiChevronLeft, FiChevronRight, FiMessageSquare, FiBarChart2
 } from 'react-icons/fi';
 
 const Sidebar = ({ role }) => {
@@ -21,37 +21,37 @@ const Sidebar = ({ role }) => {
     const adminItems = [
         {
             id: 'user-management',
-            label: 'Quan ly Nguoi dung',
+            label: 'Quản lý Người dùng',
             icon: FiUsers,
-            path: '/admin/dashboard'
+            path: '/admin/users'
         },
         {
             id: 'product-management',
-            label: 'Quan ly San pham',
+            label: 'Quản lý Sản phẩm',
             icon: FiPackage,
             path: '/admin/products'
         },
         {
             id: 'category-management',
-            label: 'Quan ly Danh muc',
+            label: 'Quản lý Danh mục',
             icon: FiGrid,
             path: '/admin/categories'
         },
         {
             id: 'order-management',
-            label: 'Quan ly Don hang',
+            label: 'Quản lý Đơn hàng',
             icon: FiShoppingCart,
             path: '/admin/orders'
         },
         {
             id: 'review-management',
-            label: 'Quan ly Danh gia',
+            label: 'Quản lý Đánh giá',
             icon: FiMessageSquare,
             path: '/admin/reviews'
         },
         {
             id: 'reports',
-            label: 'Bao cao Doanh thu',
+            label: 'Báo cáo Doanh thu',
             icon: FiBarChart2,
             path: '/admin/reports'
         },
@@ -60,38 +60,39 @@ const Sidebar = ({ role }) => {
     const staffItems = [
         {
             id: 'orders',
-            label: 'Quan ly Don hang',
+            label: 'Quản lý Đơn hàng',
             icon: FiShoppingCart,
             path: '/staff/orders'
         },
     ];
 
-    const handleItemClick = (itemId) => {
-        // Handle item click if needed
-    };
-
     return (
-        <div className={`admin-sidebar admin-text-white admin-h-screen transition-all duration-300 ${isCollapsed ? 'w-16' : 'w-64'} admin-flex admin-flex-col fixed admin-lg:relative z-30`}>
+        <div className={`admin-sidebar ${isCollapsed ? 'collapsed' : ''}`} style={{ width: isCollapsed ? '72px' : '260px', transition: 'width 0.3s ease' }}>
             {/* Header */}
-            <div className="admin-p-4 admin-border admin-border-blue-600">
-                <div className="admin-flex admin-items-center admin-justify-between">
+            <div className="sidebar-header">
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1.25rem 1rem' }}>
                     {!isCollapsed && (
-                        <h1 className="admin-text-lg admin-font-bold admin-text-white admin-uppercase admin-tracking-wider">
-                            {role === 'ADMIN' ? 'BONSAI ADMIN' : 'NHAN VIEN'}
-                        </h1>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <div style={{ width: 32, height: 32, borderRadius: '0.5rem', background: '#10b981', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <span style={{ color: 'white', fontWeight: 700, fontSize: '0.875rem' }}>B</span>
+                            </div>
+                            <span style={{ fontWeight: 700, fontSize: '1rem' }}>
+                                {role === 'ADMIN' ? 'Bonsai Admin' : 'Nhân viên'}
+                            </span>
+                        </div>
                     )}
                     <button
                         onClick={() => setIsCollapsed(!isCollapsed)}
-                        className="admin-p-2 admin-rounded-full hover:admin-bg-blue-600 transition-colors duration-200"
+                        className="sidebar-toggle-btn"
                     >
-                        {isCollapsed ? <FiChevronRight size={20} /> : <FiChevronLeft size={20} />}
+                        {isCollapsed ? <FiChevronRight size={18} /> : <FiChevronLeft size={18} />}
                     </button>
                 </div>
             </div>
 
             {/* Navigation */}
-            <nav className="admin-flex-1 admin-py-4">
-                <div className="admin-space-y-1">
+            <nav style={{ flex: 1, paddingTop: '0.5rem' }}>
+                <div className="sidebar-section">
                     {menuItems.map((item) => {
                         if (item.adminOnly && role !== 'ADMIN') return null;
                         const Icon = item.icon;
@@ -99,71 +100,52 @@ const Sidebar = ({ role }) => {
                             <NavLink
                                 key={item.id}
                                 to={item.path}
-                                onClick={() => handleItemClick(item.id)}
-                                className={({ isActive }) =>
-                                    `admin-w-full admin-flex admin-items-center admin-px-4 admin-py-3 admin-text-left hover:admin-bg-blue-600 transition-colors duration-200 ${isActive ? 'admin-bg-blue-500' : ''}`
-                                }
+                                end
+                                className={({ isActive }) => `sidebar-nav-item ${isActive ? 'active' : ''}`}
                             >
-                                <Icon size={20} className="flex-shrink-0" />
-                                {!isCollapsed && (
-                                    <span className="admin-ml-3 admin-text-sm admin-font-medium">{item.label}</span>
-                                )}
+                                <Icon size={20} />
+                                {!isCollapsed && <span>{item.label}</span>}
                             </NavLink>
                         );
                     })}
                 </div>
 
-                <div className="admin-my-4 admin-border admin-border-blue-600"></div>
-
                 {!isCollapsed && (
-                    <div className="admin-px-4 admin-py-2">
-                        <h3 className="admin-text-xs admin-font-semibold admin-text-blue-200 admin-uppercase admin-tracking-wider">
-                            {role === 'ADMIN' ? 'QUAN TRI' : 'NGHIEP VU'}
-                        </h3>
+                    <div className="sidebar-label">
+                        {role === 'ADMIN' ? 'QUẢN TRỊ' : 'NGHIỆP VỤ'}
                     </div>
                 )}
 
-                <div className="admin-space-y-1">
+                <div className="sidebar-section">
                     {(role === 'ADMIN' ? adminItems : staffItems).map((item) => {
                         const Icon = item.icon;
                         return (
                             <NavLink
                                 key={item.id}
                                 to={item.path}
-                                onClick={() => handleItemClick(item.id)}
-                                className={({ isActive }) =>
-                                    `admin-w-full admin-flex admin-items-center admin-px-4 admin-py-3 admin-text-left hover:admin-bg-blue-600 transition-colors duration-200 ${isActive ? 'admin-bg-blue-500' : ''}`
-                                }
+                                className={({ isActive }) => `sidebar-nav-item ${isActive ? 'active' : ''}`}
                             >
-                                <Icon size={20} className="flex-shrink-0" />
-                                {!isCollapsed && (
-                                    <span className="admin-ml-3 admin-text-sm admin-font-medium">{item.label}</span>
-                                )}
+                                <Icon size={20} />
+                                {!isCollapsed && <span>{item.label}</span>}
                             </NavLink>
                         );
                     })}
                 </div>
 
-                <div className="admin-my-4 admin-border admin-border-blue-600"></div>
-
-                <div className="admin-space-y-1">
+                <div style={{ marginTop: 'auto', padding: '0.5rem' }}>
                     <a
                         href={`${API_BASE}/auth/logout`}
-                        className="admin-w-full admin-flex admin-items-center admin-px-4 admin-py-3 admin-text-left hover:admin-bg-red-600 transition-colors duration-200"
+                        className="sidebar-nav-item logout-item"
                     >
-                        <FiLogOut size={20} className="flex-shrink-0" />
-                        {!isCollapsed && (
-                            <span className="admin-ml-3 admin-text-sm admin-font-medium">Dang xuat</span>
-                        )}
+                        <FiLogOut size={20} />
+                        {!isCollapsed && <span>Đăng xuất</span>}
                     </a>
                 </div>
             </nav>
 
             {!isCollapsed && (
-                <div className="admin-p-4 admin-border admin-border-blue-600">
-                    <div className="admin-text-xs admin-text-blue-200 admin-text-center">
-                        Bonsai Shop &copy; 2025
-                    </div>
+                <div className="sidebar-footer">
+                    Bonsai Shop &copy; 2025
                 </div>
             )}
         </div>

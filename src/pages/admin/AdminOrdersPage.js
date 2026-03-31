@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { FiRefreshCw, FiEye, FiX, FiDownload } from 'react-icons/fi';
 import adminApi from '../../services/adminApi';
 import { formatPrice } from '../../utils/config';
+import { useToast } from '../../components/shared/Toast';
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-';
 
 const statusConfig = {
@@ -84,6 +85,7 @@ const AdminOrdersPage = () => {
     const [selectedOrder, setSelectedOrder] = useState(null);
     const [showDetail, setShowDetail] = useState(false);
     const [exporting, setExporting] = useState(false);
+    const toast = useToast();
 
     const loadOrders = useCallback(async () => {
         setIsLoading(true);
@@ -108,13 +110,14 @@ const AdminOrdersPage = () => {
     useEffect(() => { loadOrders(); }, [loadOrders]);
 
     const handleStatusChange = async (orderId, newStatus) => {
-        if (window.confirm(`Cập nhật trạng thái đơn hàng #${orderId} thành "${statusConfig[newStatus]?.label}"?`)) {
+        const yes = await toast.confirm(`Cập nhật trạng thái đơn hàng #${orderId} thành "${statusConfig[newStatus]?.label}"?`);
+        if (yes) {
             try {
                 await adminApi.updateOrderStatus(orderId, newStatus);
-                alert('Cập nhật trạng thái thành công!');
+                toast.success('Cập nhật trạng thái thành công!');
                 loadOrders();
             } catch (err) {
-                alert(`Lỗi: ${err.message}`);
+                toast.error(`Lỗi: ${err.message}`);
             }
         }
     };
@@ -147,7 +150,7 @@ const AdminOrdersPage = () => {
                 downloadBlob(blob, `don-hang_${new Date().toLocaleDateString('vi-VN').replace(/\//g, '')}.pdf`);
             }
         } catch (err) {
-            alert('Lỗi xuất file: ' + err.message);
+            toast.error('Lỗi xuất file: ' + err.message);
         } finally {
             setExporting(false);
         }

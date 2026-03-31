@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useCart } from '../../context/CartContext';
+import { useToast } from '../../components/shared/Toast';
 import { API_BASE, formatPrice } from '../../utils/config';
 
 const CartPage = () => {
     const { cartItems, removeFromCart, updateCartItem, clearCart, getCartTotal, getCartCount, fetchCart } = useCart();
     const navigate = useNavigate();
+    const toast = useToast();
     const [showCheckout, setShowCheckout] = useState(false);
     const [checkoutData, setCheckoutData] = useState({
         shippingAddress: '',
@@ -31,13 +33,23 @@ const CartPage = () => {
         try {
             await updateCartItem(productId, newQty);
         } catch (err) {
-            alert(err.message);
+            toast.error(err.message);
         }
     };
 
+    const isValidPhone = (phone) => /^(0[3|5|7|8|9])[0-9]{8}$/.test(phone);
+
     const handleCheckout = async () => {
-        if (!checkoutData.shippingAddress || !checkoutData.phone) {
-            alert('Vui long nhap dia chi giao hang va so dien thoai.');
+        if (!checkoutData.shippingAddress.trim()) {
+            toast.warning('Vui lòng nhập địa chỉ giao hàng.');
+            return;
+        }
+        if (!checkoutData.phone.trim()) {
+            toast.warning('Vui lòng nhập số điện thoại.');
+            return;
+        }
+        if (!isValidPhone(checkoutData.phone.trim())) {
+            toast.warning('Số điện thoại không hợp lệ. Vui lòng nhập SĐT Việt Nam 10 số (VD: 0901234567).');
             return;
         }
         setOrdering(true);
@@ -56,13 +68,13 @@ const CartPage = () => {
                 withCredentials: true,
                 headers: { 'Content-Type': 'application/json' }
             });
-            alert(response.data.message || 'Dat hang thanh cong!');
+            toast.success(response.data.message || 'Đặt hàng thành công!');
             await clearCart();
             setShowCheckout(false);
             setCheckoutData({ shippingAddress: '', phone: '', note: '', paymentMethod: 'COD' });
             navigate('/orders');
         } catch (error) {
-            alert('Dat hang that bai: ' + (error.response?.data?.message || error.message));
+            toast.error('Đặt hàng thất bại: ' + (error.response?.data?.message || error.message));
         } finally {
             setOrdering(false);
         }
@@ -74,8 +86,8 @@ const CartPage = () => {
                 <div className="container">
                     <nav aria-label="breadcrumb">
                         <ol className="breadcrumb mb-0 small">
-                            <li className="breadcrumb-item"><Link to="/">Trang chu</Link></li>
-                            <li className="breadcrumb-item active">Gio hang</li>
+                            <li className="breadcrumb-item"><Link to="/">Trang chủ</Link></li>
+                            <li className="breadcrumb-item active">Giỏ hàng</li>
                         </ol>
                     </nav>
                 </div>
@@ -83,23 +95,23 @@ const CartPage = () => {
 
             <div className="container py-4">
                 <h3 className="fw-bold mb-4">
-                    <i className="fas fa-shopping-cart me-2 text-success"></i>Gio hang ({getCartCount()} san pham)
+                    <i className="fas fa-shopping-cart me-2 text-success"></i>Giỏ hàng ({getCartCount()} sản phẩm)
                 </h3>
 
                 {cartItems.length === 0 ? (
                     <div className="text-center py-5">
                         <i className="fas fa-shopping-cart fa-3x text-muted mb-3"></i>
-                        <p className="text-muted">Gio hang cua ban dang trong.</p>
-                        <Link to="/categories" className="btn btn-success">Mua sam ngay</Link>
+                        <p className="text-muted">Giỏ hàng của bạn đang trống.</p>
+                        <Link to="/categories" className="btn btn-success">Mua sắm ngay</Link>
                     </div>
                 ) : (
                     <div className="row">
                         <div className={showCheckout ? 'col-lg-7' : 'col-12'}>
                             <div className="card shadow-sm">
                                 <div className="card-header d-flex justify-content-between align-items-center">
-                                    <strong>San pham trong gio</strong>
+                                    <strong>Sản phẩm trong giỏ</strong>
                                     <button className="btn btn-outline-danger btn-sm" onClick={clearCart}>
-                                        <i className="fas fa-trash me-1"></i>Xoa tat ca
+                                        <i className="fas fa-trash me-1"></i>Xóa tất cả
                                     </button>
                                 </div>
                                 <div className="card-body p-0">
@@ -108,10 +120,10 @@ const CartPage = () => {
                                             <thead className="table-light">
                                                 <tr>
                                                     <th style={{ width: '80px' }}></th>
-                                                    <th>San pham</th>
-                                                    <th className="text-end" style={{ width: '130px' }}>Don gia</th>
-                                                    <th className="text-center" style={{ width: '150px' }}>So luong</th>
-                                                    <th className="text-end" style={{ width: '130px' }}>Thanh tien</th>
+                                                    <th>Sản phẩm</th>
+                                                    <th className="text-end" style={{ width: '130px' }}>Đơn giá</th>
+                                                    <th className="text-center" style={{ width: '150px' }}>Số lượng</th>
+                                                    <th className="text-end" style={{ width: '130px' }}>Thành tiền</th>
                                                     <th style={{ width: '50px' }}></th>
                                                 </tr>
                                             </thead>
@@ -134,26 +146,14 @@ const CartPage = () => {
                                                         <td className="text-end text-success">{formatPrice(item.price)}</td>
                                                         <td>
                                                             <div className="d-flex align-items-center justify-content-center">
-                                                                <button
-                                                                    className="btn btn-outline-secondary btn-sm px-2"
-                                                                    onClick={() => handleQuantityChange(item.productId, item.quantity - 1)}
-                                                                    disabled={item.quantity <= 1}
-                                                                >-</button>
+                                                                <button className="btn btn-outline-secondary btn-sm px-2" onClick={() => handleQuantityChange(item.productId, item.quantity - 1)} disabled={item.quantity <= 1}>-</button>
                                                                 <span className="mx-3 fw-bold">{item.quantity}</span>
-                                                                <button
-                                                                    className="btn btn-outline-secondary btn-sm px-2"
-                                                                    onClick={() => handleQuantityChange(item.productId, item.quantity + 1)}
-                                                                    disabled={item.quantity >= item.stockQuantity}
-                                                                >+</button>
+                                                                <button className="btn btn-outline-secondary btn-sm px-2" onClick={() => handleQuantityChange(item.productId, item.quantity + 1)} disabled={item.quantity >= item.stockQuantity}>+</button>
                                                             </div>
                                                         </td>
                                                         <td className="text-end fw-bold">{formatPrice(item.price * item.quantity)}</td>
                                                         <td>
-                                                            <button
-                                                                className="btn btn-outline-danger btn-sm"
-                                                                onClick={() => removeFromCart(item.productId)}
-                                                                title="Xoa"
-                                                            >
+                                                            <button className="btn btn-outline-danger btn-sm" onClick={() => removeFromCart(item.productId)} title="Xóa">
                                                                 <i className="fas fa-times"></i>
                                                             </button>
                                                         </td>
@@ -166,19 +166,16 @@ const CartPage = () => {
                                 <div className="card-footer">
                                     <div className="d-flex justify-content-between align-items-center">
                                         <Link to="/categories" className="btn btn-outline-success btn-sm">
-                                            <i className="fas fa-arrow-left me-1"></i>Tiep tuc mua sam
+                                            <i className="fas fa-arrow-left me-1"></i>Tiếp tục mua sắm
                                         </Link>
                                         <div className="text-end">
-                                            <span className="text-muted me-2">Tong cong:</span>
+                                            <span className="text-muted me-2">Tổng cộng:</span>
                                             <strong className="text-success fs-4">{formatPrice(getCartTotal())}</strong>
                                         </div>
                                     </div>
                                     {!showCheckout && (
-                                        <button
-                                            className="btn btn-success w-100 mt-3"
-                                            onClick={() => setShowCheckout(true)}
-                                        >
-                                            <i className="fas fa-credit-card me-2"></i>Tien hanh dat hang
+                                        <button className="btn btn-success w-100 mt-3" onClick={() => setShowCheckout(true)}>
+                                            <i className="fas fa-credit-card me-2"></i>Tiến hành đặt hàng
                                         </button>
                                     )}
                                 </div>
@@ -189,79 +186,39 @@ const CartPage = () => {
                             <div className="col-lg-5 mt-4 mt-lg-0">
                                 <div className="card shadow-sm">
                                     <div className="card-header">
-                                        <strong><i className="fas fa-file-invoice me-2"></i>Thong tin dat hang</strong>
+                                        <strong><i className="fas fa-file-invoice me-2"></i>Thông tin đặt hàng</strong>
                                     </div>
                                     <div className="card-body">
                                         <div className="mb-3">
-                                            <label className="form-label fw-bold">Dia chi giao hang <span className="text-danger">*</span></label>
-                                            <input
-                                                type="text"
-                                                className="form-control"
-                                                value={checkoutData.shippingAddress}
-                                                onChange={e => setCheckoutData({ ...checkoutData, shippingAddress: e.target.value })}
-                                                placeholder="Nhap dia chi giao hang..."
-                                            />
+                                            <label className="form-label fw-bold">Địa chỉ giao hàng <span className="text-danger">*</span></label>
+                                            <input type="text" className="form-control" value={checkoutData.shippingAddress} onChange={e => setCheckoutData({ ...checkoutData, shippingAddress: e.target.value })} placeholder="Nhập địa chỉ giao hàng..." />
                                         </div>
                                         <div className="mb-3">
-                                            <label className="form-label fw-bold">So dien thoai <span className="text-danger">*</span></label>
-                                            <input
-                                                type="tel"
-                                                className="form-control"
-                                                value={checkoutData.phone}
-                                                onChange={e => setCheckoutData({ ...checkoutData, phone: e.target.value })}
-                                                placeholder="Nhap so dien thoai..."
-                                            />
+                                            <label className="form-label fw-bold">Số điện thoại <span className="text-danger">*</span></label>
+                                            <input type="tel" className="form-control" value={checkoutData.phone} onChange={e => setCheckoutData({ ...checkoutData, phone: e.target.value })} placeholder="Nhập số điện thoại..." />
                                         </div>
                                         <div className="mb-3">
-                                            <label className="form-label fw-bold">Ghi chu</label>
-                                            <textarea
-                                                className="form-control"
-                                                rows="3"
-                                                value={checkoutData.note}
-                                                onChange={e => setCheckoutData({ ...checkoutData, note: e.target.value })}
-                                                placeholder="Ghi chu cho don hang (tuy chon)..."
-                                            />
+                                            <label className="form-label fw-bold">Ghi chú</label>
+                                            <textarea className="form-control" rows="3" value={checkoutData.note} onChange={e => setCheckoutData({ ...checkoutData, note: e.target.value })} placeholder="Ghi chú cho đơn hàng (tùy chọn)..." />
                                         </div>
                                         <div className="mb-3">
-                                            <label className="form-label fw-bold">Phuong thuc thanh toan</label>
-                                            <select
-                                                className="form-select"
-                                                value={checkoutData.paymentMethod}
-                                                onChange={e => setCheckoutData({ ...checkoutData, paymentMethod: e.target.value })}
-                                            >
-                                                <option value="COD">Thanh toan khi nhan hang (COD)</option>
-                                                <option value="BANK_TRANSFER">Chuyen khoan ngan hang</option>
+                                            <label className="form-label fw-bold">Phương thức thanh toán</label>
+                                            <select className="form-select" value={checkoutData.paymentMethod} onChange={e => setCheckoutData({ ...checkoutData, paymentMethod: e.target.value })}>
+                                                <option value="COD">Thanh toán khi nhận hàng (COD)</option>
+                                                <option value="BANK_TRANSFER">Chuyển khoản ngân hàng</option>
                                             </select>
                                         </div>
-
                                         <hr />
                                         <div className="d-flex justify-content-between mb-3">
-                                            <span className="fw-bold">Tong thanh toan:</span>
+                                            <span className="fw-bold">Tổng thanh toán:</span>
                                             <span className="text-success fw-bold fs-5">{formatPrice(getCartTotal())}</span>
                                         </div>
-
                                         <div className="d-flex gap-2">
-                                            <button
-                                                className="btn btn-outline-secondary flex-fill"
-                                                onClick={() => setShowCheckout(false)}
-                                            >
-                                                <i className="fas fa-arrow-left me-1"></i>Quay lai
+                                            <button className="btn btn-outline-secondary flex-fill" onClick={() => setShowCheckout(false)}>
+                                                <i className="fas fa-arrow-left me-1"></i>Quay lại
                                             </button>
-                                            <button
-                                                className="btn btn-success flex-fill"
-                                                onClick={handleCheckout}
-                                                disabled={ordering}
-                                            >
-                                                {ordering ? (
-                                                    <>
-                                                        <span className="spinner-border spinner-border-sm me-1"></span>
-                                                        Dang xu ly...
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <i className="fas fa-check me-1"></i>Xac nhan dat hang
-                                                    </>
-                                                )}
+                                            <button className="btn btn-success flex-fill" onClick={handleCheckout} disabled={ordering}>
+                                                {ordering ? (<><span className="spinner-border spinner-border-sm me-1"></span>Đang xử lý...</>) : (<><i className="fas fa-check me-1"></i>Xác nhận đặt hàng</>)}
                                             </button>
                                         </div>
                                     </div>

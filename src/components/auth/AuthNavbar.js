@@ -28,18 +28,18 @@ const Navbar = () => {
                 </button>
                 <div className="collapse navbar-collapse" id="navbarNav">
                     <ul className="navbar-nav mx-auto">
-                        <li className="nav-item"><Link className="nav-link" to="/">Trang chu</Link></li>
-                        <li className="nav-item"><Link className="nav-link" to="/categories">San pham</Link></li>
-                        <li className="nav-item"><Link className="nav-link" to="/about">Gioi thieu</Link></li>
-                        <li className="nav-item"><Link className="nav-link" to="/contact">Lien he</Link></li>
+                        <li className="nav-item"><Link className="nav-link" to="/">Trang chủ</Link></li>
+                        <li className="nav-item"><Link className="nav-link" to="/categories">Sản phẩm</Link></li>
+                        <li className="nav-item"><Link className="nav-link" to="/about">Giới thiệu</Link></li>
+                        <li className="nav-item"><Link className="nav-link" to="/contact">Liên hệ</Link></li>
                     </ul>
                     <div className="d-flex align-items-center">
                         <div className="ms-auto">
                             {location.pathname !== '/login' && (
-                                <Link to="/login" className="btn nav-btn btn-login me-2">Dang nhap</Link>
+                                <Link to="/login" className="btn nav-btn btn-login me-2">Đăng nhập</Link>
                             )}
                             {location.pathname !== '/register' && (
-                                <Link to="/register" className="btn nav-btn btn-register">Dang ky</Link>
+                                <Link to="/register" className="btn nav-btn btn-register">Đăng ký</Link>
                             )}
                         </div>
                     </div>

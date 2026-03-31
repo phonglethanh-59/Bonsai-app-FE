@@ -3,9 +3,11 @@ import axios from 'axios';
 import { useAuth } from '../../context/AuthContext';
 import { API_BASE } from '../../utils/config';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
+import { useToast } from './Toast';
 
 const ProfileModal = ({ show, handleClose }) => {
-    const { user, login, refreshUser } = useAuth(); // Dùng login để cập nhật lại context
+    const { user, login, refreshUser } = useAuth();
+    const toast = useToast(); // Dùng login để cập nhật lại context
     const [formData, setFormData] = useState({
         fullName: '',
         email: '',
@@ -51,14 +53,14 @@ const ProfileModal = ({ show, handleClose }) => {
             if (avatarFile) {
                 const avatarFormData = new FormData();
                 avatarFormData.append('avatarFile', avatarFile);
-                const avatarRes = await axios.post('${API_BASE}/api/customers/profile/avatar', avatarFormData, {
+                const avatarRes = await axios.post(`${API_BASE}/api/customers/profile/avatar`, avatarFormData, {
                     withCredentials: true,
                 });
                 avatarUrl = avatarRes.data.avatarUrl; // Lấy URL mới
             }
 
             // Bước 2: Cập nhật thông tin text
-            await axios.post('${API_BASE}/api/customers/profile/update', formData, {
+            await axios.post(`${API_BASE}/api/customers/profile/update`, formData, {
                 withCredentials: true,
             });
 
@@ -73,7 +75,7 @@ const ProfileModal = ({ show, handleClose }) => {
             };
             refreshUser(updatedUser); // <-- GỌI HÀM REFRESH
             handleClose();
-            alert('Cập nhật thông tin thành công!');
+            toast.success('Cập nhật thông tin thành công!');
 
         } catch (err) {
             setError(err.response?.data?.message || 'Có lỗi xảy ra, vui lòng thử lại.');
