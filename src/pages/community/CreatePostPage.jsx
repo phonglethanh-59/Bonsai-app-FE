@@ -4,6 +4,13 @@ import { UploadCloud } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { communityService } from '../../services/communityService';
 import { useToast } from '../../components/shared/Toast';
+import { API_BASE } from '../../utils/config';
+
+const getImageUrl = (path) => {
+    if (!path) return '';
+    if (path.startsWith('http') || path.startsWith('data:')) return path;
+    return `${API_BASE}${path.startsWith('/') ? '' : '/'}${path}`;
+};
 
 const CreatePostPage = () => {
     const [title, setTitle] = useState('');
@@ -69,7 +76,7 @@ const CreatePostPage = () => {
     return (
         <Container className="py-4 mt-5">
             <Row className="justify-content-center">
-                <Col lg={8}>
+                <Col lg={8} md={10}>
                     <Card className="border-0 shadow-sm rounded-4">
                         <Card.Header className="bg-white border-bottom-0 pt-4 pb-0 px-4">
                             <h3 className="fw-bold" style={{ color: '#2D6A4F' }}>Tạo bài viết mới</h3>
@@ -82,7 +89,7 @@ const CreatePostPage = () => {
                                     <div className="d-flex flex-wrap gap-3">
                                         {images.map((img, idx) => (
                                             <div key={idx} className="position-relative" style={{ width: '120px', height: '120px' }}>
-                                                <Image src={img} rounded className="object-fit-cover w-100 h-100 border" />
+                                                <Image src={getImageUrl(img)} rounded className="object-fit-cover w-100 h-100 border" />
                                                 <CloseButton
                                                     className="position-absolute bg-white rounded-circle p-1"
                                                     style={{ top: '5px', right: '5px' }}

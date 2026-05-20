@@ -5,6 +5,14 @@ import { Link, useNavigate } from 'react-router-dom';
 import { communityService } from '../../services/communityService';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../shared/Toast';
+import { API_BASE } from '../../utils/config';
+
+const getImageUrl = (path) => {
+    if (!path) return '';
+    if (path.startsWith('http') || path.startsWith('data:')) return path;
+    return `${API_BASE}${path.startsWith('/') ? '' : '/'}${path}`;
+};
+
 
 const PostCard = ({ post: initialPost }) => {
     const [post, setPost] = useState(initialPost);
@@ -54,7 +62,7 @@ const PostCard = ({ post: initialPost }) => {
                 <div className="d-flex justify-content-between align-items-center mb-3">
                     <Link to={`/community/users/${post.author.userId}`} className="text-decoration-none text-dark d-flex align-items-center">
                         <Image
-                            src={post.author.avatarUrl || 'https://ui-avatars.com/api/?name=' + post.author.fullName}
+                            src={getImageUrl(post.author.avatarUrl) || 'https://ui-avatars.com/api/?name=' + post.author.fullName}
                             roundedCircle
                             width={40}
                             height={40}
@@ -104,7 +112,7 @@ const PostCard = ({ post: initialPost }) => {
                     <div className="mb-3 rounded-3 overflow-hidden bg-light text-center cursor-pointer"
                         style={{ maxHeight: '400px' }}
                         onClick={() => navigate(`/community/posts/${post.id}`)}>
-                        <Image src={post.images[0].imageUrl} fluid className="object-fit-cover w-100" style={{ maxHeight: '400px' }} />
+                        <Image src={getImageUrl(post.images[0].imageUrl)} fluid className="object-fit-cover w-100" style={{ maxHeight: '400px' }} />
                         {post.images.length > 1 && (
                             <div className="mt-2 text-muted fw-medium">+ {post.images.length - 1} ảnh nữa</div>
                         )}

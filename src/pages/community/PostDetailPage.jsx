@@ -5,6 +5,13 @@ import { Send, ArrowLeft } from 'lucide-react';
 import { communityService } from '../../services/communityService';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../components/shared/Toast';
+import { API_BASE } from '../../utils/config';
+
+const getImageUrl = (path) => {
+    if (!path) return '';
+    if (path.startsWith('http') || path.startsWith('data:')) return path;
+    return `${API_BASE}${path.startsWith('/') ? '' : '/'}${path}`;
+};
 
 const PostDetailPage = () => {
     const { id } = useParams();
@@ -88,7 +95,7 @@ const PostDetailPage = () => {
     return (
         <Container className="py-4 mt-5">
             <Row className="justify-content-center">
-                <Col lg={8}>
+                <Col lg={8} md={10}>
                     {/* Back button */}
                     <Button
                         variant="link"
@@ -103,7 +110,7 @@ const PostDetailPage = () => {
                         <Card.Header className="bg-white border-0 p-4 pb-2 d-flex justify-content-between align-items-center">
                             <div className="d-flex align-items-center">
                                 <Image
-                                    src={post.author?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author?.fullName || 'User')}&background=52B788&color=fff`}
+                                    src={getImageUrl(post.author?.avatarUrl) || `https://ui-avatars.com/api/?name=${encodeURIComponent(post.author?.fullName || 'User')}&background=52B788&color=fff`}
                                     roundedCircle
                                     width={45}
                                     height={45}
@@ -130,7 +137,7 @@ const PostDetailPage = () => {
                                 <div className="mb-4 rounded-4 overflow-hidden">
                                     {post.images.length === 1 ? (
                                         <Image
-                                            src={post.images[0].imageUrl}
+                                            src={getImageUrl(post.images[0].imageUrl)}
                                             fluid
                                             className="w-100 object-fit-contain bg-light"
                                             style={{ maxHeight: '500px' }}
@@ -140,7 +147,7 @@ const PostDetailPage = () => {
                                             {post.images.map(img => (
                                                 <Carousel.Item key={img.id}>
                                                     <Image
-                                                        src={img.imageUrl}
+                                                        src={getImageUrl(img.imageUrl)}
                                                         className="d-block w-100 object-fit-contain"
                                                         style={{ maxHeight: '500px' }}
                                                         alt="post"
@@ -219,7 +226,7 @@ const PostDetailPage = () => {
                                     {comments.map(c => (
                                         <div key={c.id} className="d-flex gap-3">
                                             <Image
-                                                src={c.author?.avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.author?.fullName || 'User')}&background=52B788&color=fff`}
+                                                src={getImageUrl(c.author?.avatarUrl) || `https://ui-avatars.com/api/?name=${encodeURIComponent(c.author?.fullName || 'User')}&background=52B788&color=fff`}
                                                 roundedCircle
                                                 width={40}
                                                 height={40}

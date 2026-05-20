@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Row, Col, Nav, Spinner, Button, Container, Card } from 'react-bootstrap';
 import { communityService } from '../../services/communityService';
 import PostCard from '../../components/community/PostCard';
-import TrendingTags from '../../components/community/TrendingTags';
 import { useToast } from '../../components/shared/Toast';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -77,10 +76,10 @@ const CommunityFeedPage = () => {
 
     return (
         <Container className="py-4 mt-5">
-            <Row>
-                <Col lg={8}>
-                    <div className="d-flex justify-content-between align-items-center mb-3">
-                        <h2 className="mb-0 fw-bold" style={{ color: '#2D6A4F' }}>🌿 Cộng Đồng</h2>
+            <Row className="justify-content-center">
+                <Col lg={8} md={10}>
+                    <div className="text-center mb-4">
+                        <h2 className="fw-bold mb-3" style={{ color: '#2D6A4F' }}>🌿 Cộng Đồng</h2>
                         <Button
                             variant="success"
                             className="rounded-pill px-4"
@@ -96,7 +95,7 @@ const CommunityFeedPage = () => {
 
                     <Card className="mb-4 shadow-sm border-0 rounded-4">
                         <Card.Header className="bg-white border-0 pt-3 pb-0">
-                            <Nav variant="underline" activeKey={activeTab} onSelect={handleTabSelect}>
+                            <Nav variant="underline" activeKey={activeTab} onSelect={handleTabSelect} className="justify-content-center">
                                 <Nav.Item>
                                     <Nav.Link eventKey="for-you" className="fw-medium pb-2">Dành cho bạn</Nav.Link>
                                 </Nav.Item>
@@ -142,10 +141,6 @@ const CommunityFeedPage = () => {
                             </div>
                         </Card.Body>
                     </Card>
-                </Col>
-
-                <Col lg={4}>
-                    <TrendingTags onTagClick={(tag) => navigate(`/community?tag=${tag}`)} />
                 </Col>
             </Row>
         </Container>
