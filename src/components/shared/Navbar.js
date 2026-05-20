@@ -48,6 +48,7 @@ const Navbar = () => {
                         <ul className="navbar-nav mx-auto">
                             <li className="nav-item"><NavLink className="nav-link" to="/" end>Trang chủ</NavLink></li>
                             <li className="nav-item"><NavLink className="nav-link" to="/categories">Sản phẩm</NavLink></li>
+                            <li className="nav-item"><NavLink className="nav-link" to="/community">Cộng đồng</NavLink></li>
                             <li className="nav-item"><NavLink className="nav-link" to="/about">Giới thiệu</NavLink></li>
                             <li className="nav-item"><NavLink className="nav-link" to="/contact">Liên hệ</NavLink></li>
                         </ul>

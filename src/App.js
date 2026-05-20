@@ -21,6 +21,11 @@ import OrdersPage from './pages/home/OrdersPage';
 import WishlistPage from './pages/home/WishlistPage';
 import CartPage from './pages/home/CartPage';
 
+// Community
+import CommunityFeedPage from './pages/community/CommunityFeedPage';
+import CreatePostPage from './pages/community/CreatePostPage';
+import PostDetailPage from './pages/community/PostDetailPage';
+
 // Admin pages - lazy load (chỉ tải khi cần)
 const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
 const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage'));
@@ -32,11 +37,11 @@ const AdminReportsPage = lazy(() => import('./pages/admin/AdminReportsPage'));
 const AdminUsersPage = lazy(() => import('./pages/admin/AdminUsersPage'));
 
 const LoadingFallback = () => (
-    <div className="text-center p-5">
-        <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-        </div>
+  <div className="text-center p-5">
+    <div className="spinner-border text-primary" role="status">
+      <span className="visually-hidden">Loading...</span>
     </div>
+  </div>
 );
 
 const ProtectedRoute = ({ children, roles }) => {
@@ -54,67 +59,76 @@ function App() {
   return (
     <ErrorBoundary>
       <ToastProvider>
-      <AuthProvider>
-        <CartProvider>
-          <WishlistProvider>
-          <Router>
-            <Suspense fallback={<LoadingFallback />}>
-              <Routes>
-                {/* Trang Auth */}
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/register" element={<RegisterPage />} />
+        <AuthProvider>
+          <CartProvider>
+            <WishlistProvider>
+              <Router>
+                <Suspense fallback={<LoadingFallback />}>
+                  <Routes>
+                    {/* Trang Auth */}
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/register" element={<RegisterPage />} />
 
-                {/* Admin */}
-                <Route
-                  path="/admin"
-                  element={
-                    <ProtectedRoute roles={['ADMIN']}>
-                      <AdminLayout />
-                    </ProtectedRoute>
-                  }
-                >
-                  <Route path="dashboard" element={<AdminDashboardPage />} />
-                  <Route path="users" element={<AdminUsersPage />} />
-                  <Route path="products" element={<AdminProductsPage />} />
-                  <Route path="categories" element={<AdminCategoriesPage />} />
-                  <Route path="orders" element={<AdminOrdersPage />} />
-                  <Route path="reviews" element={<AdminReviewsPage />} />
-                  <Route path="reports" element={<AdminReportsPage />} />
-                </Route>
+                    {/* Admin */}
+                    <Route
+                      path="/admin"
+                      element={
+                        <ProtectedRoute roles={['ADMIN']}>
+                          <AdminLayout />
+                        </ProtectedRoute>
+                      }
+                    >
+                      <Route path="dashboard" element={<AdminDashboardPage />} />
+                      <Route path="users" element={<AdminUsersPage />} />
+                      <Route path="products" element={<AdminProductsPage />} />
+                      <Route path="categories" element={<AdminCategoriesPage />} />
+                      <Route path="orders" element={<AdminOrdersPage />} />
+                      <Route path="reviews" element={<AdminReviewsPage />} />
+                      <Route path="reports" element={<AdminReportsPage />} />
+                    </Route>
 
-                {/* Trang chính */}
-                <Route path="/" element={<Layout />}>
-                  <Route index element={<HomePage />} />
-                  <Route path="about" element={<AboutPage />} />
-                  <Route path="contact" element={<ContactPage />} />
-                  <Route path="categories" element={<CategoriesPage />} />
-                  <Route path="product/:id" element={<ProductDetailPage />} />
-                  <Route path="orders" element={
-                    <ProtectedRoute>
-                      <OrdersPage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="wishlist" element={
-                    <ProtectedRoute>
-                      <WishlistPage />
-                    </ProtectedRoute>
-                  } />
-                  <Route path="cart" element={
-                    <ProtectedRoute>
-                      <CartPage />
-                    </ProtectedRoute>
-                  } />
-                </Route>
+                    {/* Trang chính */}
+                    <Route path="/" element={<Layout />}>
+                      <Route index element={<HomePage />} />
+                      <Route path="about" element={<AboutPage />} />
+                      <Route path="contact" element={<ContactPage />} />
+                      <Route path="categories" element={<CategoriesPage />} />
+                      <Route path="product/:id" element={<ProductDetailPage />} />
+                      <Route path="orders" element={
+                        <ProtectedRoute>
+                          <OrdersPage />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="wishlist" element={
+                        <ProtectedRoute>
+                          <WishlistPage />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="cart" element={
+                        <ProtectedRoute>
+                          <CartPage />
+                        </ProtectedRoute>
+                      } />
 
-                {/* Error pages */}
-                <Route path="/403" element={<ForbiddenPage />} />
-                <Route path="*" element={<NotFoundPage />} />
-              </Routes>
-            </Suspense>
-          </Router>
-          </WishlistProvider>
-        </CartProvider>
-      </AuthProvider>
+                      {/* Community Feature Routes */}
+                      <Route path="community" element={<CommunityFeedPage />} />
+                      <Route path="community/create" element={
+                        <ProtectedRoute>
+                          <CreatePostPage />
+                        </ProtectedRoute>
+                      } />
+                      <Route path="community/posts/:id" element={<PostDetailPage />} />
+                    </Route>
+
+                    {/* Error pages */}
+                    <Route path="/403" element={<ForbiddenPage />} />
+                    <Route path="*" element={<NotFoundPage />} />
+                  </Routes>
+                </Suspense>
+              </Router>
+            </WishlistProvider>
+          </CartProvider>
+        </AuthProvider>
       </ToastProvider>
     </ErrorBoundary>
   );
